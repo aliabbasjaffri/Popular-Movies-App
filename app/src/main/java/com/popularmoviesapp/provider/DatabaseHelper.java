@@ -1,9 +1,9 @@
 package com.popularmoviesapp.provider;
 
 import android.content.Context;
+import com.popularmoviesapp.model.Movie;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import com.popularmoviesapp.model.Movie;
 import static nl.qbusict.cupboard.CupboardFactory.cupboard;
 
 /**
@@ -11,7 +11,7 @@ import static nl.qbusict.cupboard.CupboardFactory.cupboard;
  */
 public class DatabaseHelper extends SQLiteOpenHelper
 {
-    private static final String DATABASE_NAME = "crossOverDb.db";
+    private static final String DATABASE_NAME = "popularMovies.db";
     private static final int DATABASE_VERSION = 1;
 
     static

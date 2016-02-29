@@ -1,23 +1,19 @@
 package com.popularmoviesapp.provider;
 
-import android.content.Context;
-import android.net.Uri;
-
-import com.popularmoviesapp.model.Movie;
-
 import java.util.List;
-
-import nl.littlerobots.cupboard.tools.provider.CupboardContentProvider;
+import android.net.Uri;
+import android.content.Context;
+import com.popularmoviesapp.model.Movie;
 import nl.littlerobots.cupboard.tools.provider.UriHelper;
-
 import static nl.qbusict.cupboard.CupboardFactory.cupboard;
+import nl.littlerobots.cupboard.tools.provider.CupboardContentProvider;
 
 /**
  * Created by aliabbasjaffri on 01/03/16.
  */
 public class MovieProvider extends CupboardContentProvider
 {
-    private static final String DATABASE_NAME = "crossOverDb.db";
+    private static final String DATABASE_NAME = "popularMovies.db";
     private static final int DATABASE_VERSION = 1;
     public static final String CONTENT_AUTHORITY = "com.udacity.popularmoviesapp";
     public static final String BASE_CONTENT_URI = "content://" + CONTENT_AUTHORITY + "/movies";
