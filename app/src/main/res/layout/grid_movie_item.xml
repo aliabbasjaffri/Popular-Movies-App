@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_height="270dp">
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="270dp"
+    android:id="@+id/gridMovieItemFrameLayout">
 
     <ImageView
         android:id="@+id/gridMovieItemImageView"
@@ -26,7 +27,7 @@
             android:layout_weight="1"
             android:layout_height="match_parent">
             <ImageView
-                android:id="@+id/gridMovieItemLikeImage"
+                android:id="@+id/gridMovieItemLikeImageView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 tools:src="@drawable/ic_favorite"
