@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.GridView;
 import android.widget.TextView;
 
 import com.popularmoviesapp.R;
@@ -37,7 +38,7 @@ public class MainActivityFragment extends Fragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
-        textView = (TextView) view.findViewById(R.id.fragmentMainID);
+        GridView gridView = (GridView)view.findViewById(R.id.mainMoviesGrid);
 
         return view;
     }

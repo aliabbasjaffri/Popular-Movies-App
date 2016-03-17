@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_height="270dp">
+
+    <ImageView
+        android:id="@+id/gridMovieItemImageView"
+        android:layout_width="match_parent"
+        android:scaleType="fitXY"
+        android:layout_height="match_parent" />
+
+    <LinearLayout
+        android:id="@+id/gridMovieItemTitleContainer"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:background="@color/colorPrimaryTransparent"
+        android:layout_marginBottom="1dp"
+        android:gravity="bottom"
+        android:layout_gravity="center_horizontal|bottom">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent">
+            <ImageView
+                android:id="@+id/gridMovieItemLikeImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:src="@drawable/ic_favorite"
+                android:visibility="visible"
+                android:padding="@dimen/general_padding"
+                android:layout_gravity="center|left" />
+            <TextView
+                android:id="@+id/gridMovieItemAverageRating"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorWhite"
+                android:textSize="@dimen/general_text_size"
+                android:layout_gravity="center"
+                tools:text="9.2"
+                android:gravity="left" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:layout_width="0dp"
+            android:layout_gravity=""
+            android:layout_height="match_parent"
+            android:gravity="right">
+
+            <TextView
+                android:id="@+id/gridMovieItemYear"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorWhite"
+                android:textSize="@dimen/general_text_size"
+                tools:text="2015"
+                android:layout_gravity="center|right"
+                android:layout_marginRight="@dimen/general_margin" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</FrameLayout>
