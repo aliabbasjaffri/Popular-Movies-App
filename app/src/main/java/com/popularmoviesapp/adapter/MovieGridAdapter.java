@@ -5,6 +5,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.ColorUtils;
 import android.support.v7.graphics.Palette;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import com.popularmoviesapp.R;
@@ -80,8 +81,10 @@ public class MovieGridAdapter extends CursorAdapter
         String movieAverageRating = cursor.getString(MainActivityFragment.MOVIE_VOTE_COUNT);
         viewHolder.mGridMovieItemAverageRating.setText(movieAverageRating);
 
-        String movieReleaseYear = cursor.getString(MainActivityFragment.MOVIE_VOTE_COUNT );
+        String movieReleaseYear = cursor.getString(MainActivityFragment.MOVIE_RELEASE_DATE );
         viewHolder.mGridMovieItemDate.setText(movieReleaseYear);
+
+        Log.v("data" , movieAverageRating + " ----" + movieReleaseYear);
     }
 
     private void  setIconForLiked(GridViewHolder holder, String value) {

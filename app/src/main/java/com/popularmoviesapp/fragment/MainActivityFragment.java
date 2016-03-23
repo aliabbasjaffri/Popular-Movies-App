@@ -44,13 +44,13 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     };
 
     public static final int MOVIE_ID = 0;
-    public static final int MOVIE_TITLE = 0;
-    public static final int MOVIE_OVERVIEW = 0;
-    public static final int MOVIE_VOTE_COUNT = 0;
-    public static final int MOVIE_RELEASE_DATE = 0;
-    public static final int MOVIE_POSTER_PATH = 0;
-    public static final int MOVIE_BACKDROP_PATH = 0;
-    public static final int MOVIE_LIKED = 0;
+    public static final int MOVIE_TITLE = 1;
+    public static final int MOVIE_OVERVIEW = 2;
+    public static final int MOVIE_VOTE_COUNT = 3;
+    public static final int MOVIE_RELEASE_DATE = 4;
+    public static final int MOVIE_POSTER_PATH = 5;
+    public static final int MOVIE_BACKDROP_PATH = 6;
+    public static final int MOVIE_LIKED = 7;
 
 
     @Override
