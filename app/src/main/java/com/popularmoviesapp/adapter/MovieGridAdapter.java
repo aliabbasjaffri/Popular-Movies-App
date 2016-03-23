@@ -53,7 +53,7 @@ public class MovieGridAdapter extends CursorAdapter
         String imageUrl = Constants.IMAGE_MOVIE_URL + Constants.IMAGE_SIZE_W185 + moviePosterPath;
         Picasso.with(viewHolder.mGridMovieItemImageView.getContext())
                 .load(imageUrl)
-                .placeholder(R.drawable.ic_movie)
+                .placeholder(R.drawable.ic_movie_placeholder)
                 .into(viewHolder.mGridMovieItemImageView, new Callback()
                 {
                     @Override

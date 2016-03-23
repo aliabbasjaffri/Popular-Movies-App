@@ -25,18 +25,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        DatabaseHelper db = new DatabaseHelper(this);
-
-        ContentValues values = new ContentValues();
-        values.put(MovieContract.MovieEntry.COLUMN_MOVIE_TITLE, "Hello Movie 2");
-        values.put(MovieContract.MovieEntry.COLUMN_MOVIE_OVERVIEW, "Very good movie 2, amazing movie");
-        values.put(MovieContract.MovieEntry.COLUMN_MOVIE_VOTE_COUNT, "20");
-        values.put(MovieContract.MovieEntry.COLUMN_MOVIE_RELEASE_DATE, "18011991");
-        values.put(MovieContract.MovieEntry.COLUMN_MOVIE_POSTER_PATH, "blabla");
-        values.put(MovieContract.MovieEntry.COLUMN_MOVIE_BACKDROP_PATH, "morebiggerbla");
-
-        db.getWritableDatabase().insert(MovieContract.MovieEntry.TABLE_NAME , null , values);
-
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
