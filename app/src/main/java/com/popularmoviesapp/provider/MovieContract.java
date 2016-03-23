@@ -37,6 +37,8 @@ public class MovieContract
 
         public static final String TABLE_NAME = "Movies";
 
+        public static final String COLUMN_MOVIE_LIKED = "movie_liked";
+
         public static Uri buildMovieUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }

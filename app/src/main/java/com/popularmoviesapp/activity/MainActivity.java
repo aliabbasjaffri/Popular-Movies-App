@@ -1,17 +1,20 @@
 package com.popularmoviesapp.activity;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import com.popularmoviesapp.R;
+import com.popularmoviesapp.fragment.MainActivityFragment;
+
 import android.support.v7.widget.Toolbar;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.design.widget.FloatingActionButton;
 
-public class MainActivity extends AppCompatActivity {
-
+public class MainActivity extends AppCompatActivity implements MainActivityFragment.MovieCallback
+{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,5 +52,10 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onMovieItemSelected(Uri dataUri) {
+
     }
 }
