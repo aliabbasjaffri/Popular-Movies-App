@@ -6,5 +6,6 @@
     <dimen name="general_margin">16dp</dimen>
     <dimen name="general_padding">16dp</dimen>
     <dimen name="general_text_size">16sp</dimen>
+    <dimen name="gridViewSpacing">4dp</dimen>
 
 </resources>
