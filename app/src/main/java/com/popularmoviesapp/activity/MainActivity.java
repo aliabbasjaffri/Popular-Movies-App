@@ -1,5 +1,6 @@
 package com.popularmoviesapp.activity;
 
+import android.content.ContentValues;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
@@ -7,6 +8,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import com.popularmoviesapp.R;
 import com.popularmoviesapp.fragment.MainActivityFragment;
+import com.popularmoviesapp.provider.DatabaseHelper;
+import com.popularmoviesapp.provider.MovieContract;
 
 import android.support.v7.widget.Toolbar;
 import android.support.design.widget.Snackbar;
@@ -21,6 +24,18 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        DatabaseHelper db = new DatabaseHelper(this);
+
+        ContentValues values = new ContentValues();
+        values.put(MovieContract.MovieEntry.COLUMN_MOVIE_TITLE, "Hello Movie 2");
+        values.put(MovieContract.MovieEntry.COLUMN_MOVIE_OVERVIEW, "Very good movie 2, amazing movie");
+        values.put(MovieContract.MovieEntry.COLUMN_MOVIE_VOTE_COUNT, "20");
+        values.put(MovieContract.MovieEntry.COLUMN_MOVIE_RELEASE_DATE, "18011991");
+        values.put(MovieContract.MovieEntry.COLUMN_MOVIE_POSTER_PATH, "blabla");
+        values.put(MovieContract.MovieEntry.COLUMN_MOVIE_BACKDROP_PATH, "morebiggerbla");
+
+        db.getWritableDatabase().insert(MovieContract.MovieEntry.TABLE_NAME , null , values);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
