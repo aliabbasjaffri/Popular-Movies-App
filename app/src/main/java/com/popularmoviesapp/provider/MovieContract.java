@@ -20,6 +20,7 @@ public class MovieContract
     {
         String COLUMN_MOVIE_TITLE = "movie_title";
         String COLUMN_MOVIE_OVERVIEW = "movie_overview";
+        String COLUMN_MOVIE_POPULARITY = "movie_popularity";
         String COLUMN_MOVIE_VOTE_COUNT = "movie_vote_count";
         String COLUMN_MOVIE_RELEASE_DATE = "movie_release_date";
         String COLUMN_MOVIE_POSTER_PATH = "movie_poster_path";

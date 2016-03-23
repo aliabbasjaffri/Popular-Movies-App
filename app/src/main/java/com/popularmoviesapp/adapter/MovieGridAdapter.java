@@ -74,17 +74,14 @@ public class MovieGridAdapter extends CursorAdapter
                 }
         );
 
-
         String movieLikedIndicator = cursor.getString(MainActivityFragment.MOVIE_LIKED);
         setIconForLiked(viewHolder, movieLikedIndicator);
 
-        String movieAverageRating = cursor.getString(MainActivityFragment.MOVIE_VOTE_COUNT);
+        String movieAverageRating = cursor.getString(MainActivityFragment.MOVIE_POPULARITY);
         viewHolder.mGridMovieItemAverageRating.setText(movieAverageRating);
 
         String movieReleaseYear = cursor.getString(MainActivityFragment.MOVIE_RELEASE_DATE );
         viewHolder.mGridMovieItemDate.setText(movieReleaseYear);
-
-        Log.v("data" , movieAverageRating + " ----" + movieReleaseYear);
     }
 
     private void  setIconForLiked(GridViewHolder holder, String value) {

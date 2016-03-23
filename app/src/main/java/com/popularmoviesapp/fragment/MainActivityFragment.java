@@ -36,6 +36,7 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
             MovieContract.MovieEntry.TABLE_NAME + "." + MovieContract.MovieEntry._ID,
             MovieContract.MovieEntry.COLUMN_MOVIE_TITLE,
             MovieContract.MovieEntry.COLUMN_MOVIE_OVERVIEW,
+            MovieContract.MovieEntry.COLUMN_MOVIE_POPULARITY,
             MovieContract.MovieEntry.COLUMN_MOVIE_VOTE_COUNT,
             MovieContract.MovieEntry.COLUMN_MOVIE_RELEASE_DATE,
             MovieContract.MovieEntry.COLUMN_MOVIE_POSTER_PATH,
@@ -46,11 +47,12 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     public static final int MOVIE_ID = 0;
     public static final int MOVIE_TITLE = 1;
     public static final int MOVIE_OVERVIEW = 2;
-    public static final int MOVIE_VOTE_COUNT = 3;
-    public static final int MOVIE_RELEASE_DATE = 4;
-    public static final int MOVIE_POSTER_PATH = 5;
-    public static final int MOVIE_BACKDROP_PATH = 6;
-    public static final int MOVIE_LIKED = 7;
+    public static final int MOVIE_POPULARITY = 3;
+    public static final int MOVIE_VOTE_COUNT = 4;
+    public static final int MOVIE_RELEASE_DATE = 5;
+    public static final int MOVIE_POSTER_PATH = 6;
+    public static final int MOVIE_BACKDROP_PATH =7;
+    public static final int MOVIE_LIKED = 8;
 
 
     @Override
@@ -73,7 +75,7 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        String sortOrder = MovieContract.MovieEntry.COLUMN_MOVIE_VOTE_COUNT + " ASC";
+        String sortOrder = MovieContract.MovieEntry.COLUMN_MOVIE_POPULARITY + " ASC";
         Uri movieUri = MovieContract.MovieEntry.CONTENT_URI;
         return new CursorLoader(getActivity(), movieUri, MOVIE_COLUMNS , null, null, sortOrder);
     }
