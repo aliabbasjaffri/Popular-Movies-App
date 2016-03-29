@@ -48,7 +48,7 @@ public class MovieGridAdapter extends CursorAdapter
     public void bindView(View view, Context context, Cursor cursor)
     {
         final GridViewHolder viewHolder = (GridViewHolder) view.getTag();
-        String moviePosterPath = cursor.getString(MainActivityFragment.MOVIE_POSTER_PATH);
+        String moviePosterPath = cursor.getString(Constants.MOVIE_POSTER_PATH);
 
         final int colorPrimaryLight = ContextCompat.getColor(context, (R.color.colorPrimaryTransparent));
         String imageUrl = Constants.IMAGE_MOVIE_URL + Constants.IMAGE_SIZE_W185 + moviePosterPath;
@@ -74,13 +74,13 @@ public class MovieGridAdapter extends CursorAdapter
                 }
         );
 
-        String movieLikedIndicator = cursor.getString(MainActivityFragment.MOVIE_LIKED);
+        String movieLikedIndicator = cursor.getString(Constants.MOVIE_LIKED);
         setIconForLiked(viewHolder, movieLikedIndicator);
 
-        String movieAverageRating = cursor.getString(MainActivityFragment.MOVIE_POPULARITY);
+        String movieAverageRating = cursor.getString(Constants.MOVIE_POPULARITY);
         viewHolder.mGridMovieItemAverageRating.setText(movieAverageRating);
 
-        String movieReleaseYear = cursor.getString(MainActivityFragment.MOVIE_RELEASE_DATE );
+        String movieReleaseYear = cursor.getString(Constants.MOVIE_RELEASE_DATE );
         viewHolder.mGridMovieItemDate.setText(movieReleaseYear);
     }
 

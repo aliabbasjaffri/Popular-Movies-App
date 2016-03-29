@@ -17,6 +17,7 @@ import android.widget.ListView;
 import com.popularmoviesapp.R;
 import com.popularmoviesapp.adapter.MovieGridAdapter;
 import com.popularmoviesapp.provider.MovieContract;
+import com.popularmoviesapp.utils.Constants;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -31,29 +32,6 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     MovieGridAdapter mMovieGridAdapter = null;
     int mPosition = GridView.INVALID_POSITION;
     static final String SELECTED_KEY = "selectedPosition";
-
-    static final String[] MOVIE_COLUMNS = {
-            MovieContract.MovieEntry.TABLE_NAME + "." + MovieContract.MovieEntry._ID,
-            MovieContract.MovieEntry.COLUMN_MOVIE_TITLE,
-            MovieContract.MovieEntry.COLUMN_MOVIE_OVERVIEW,
-            MovieContract.MovieEntry.COLUMN_MOVIE_POPULARITY,
-            MovieContract.MovieEntry.COLUMN_MOVIE_VOTE_COUNT,
-            MovieContract.MovieEntry.COLUMN_MOVIE_RELEASE_DATE,
-            MovieContract.MovieEntry.COLUMN_MOVIE_POSTER_PATH,
-            MovieContract.MovieEntry.COLUMN_MOVIE_BACKDROP_PATH,
-            MovieContract.MovieEntry.COLUMN_MOVIE_LIKED
-    };
-
-    public static final int MOVIE_ID = 0;
-    public static final int MOVIE_TITLE = 1;
-    public static final int MOVIE_OVERVIEW = 2;
-    public static final int MOVIE_POPULARITY = 3;
-    public static final int MOVIE_VOTE_COUNT = 4;
-    public static final int MOVIE_RELEASE_DATE = 5;
-    public static final int MOVIE_POSTER_PATH = 6;
-    public static final int MOVIE_BACKDROP_PATH =7;
-    public static final int MOVIE_LIKED = 8;
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -77,7 +55,7 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         String sortOrder = MovieContract.MovieEntry.COLUMN_MOVIE_POPULARITY + " ASC";
         Uri movieUri = MovieContract.MovieEntry.CONTENT_URI;
-        return new CursorLoader(getActivity(), movieUri, MOVIE_COLUMNS , null, null, sortOrder);
+        return new CursorLoader(getActivity(), movieUri, Constants.MOVIE_COLUMNS , null, null, sortOrder);
     }
 
     @Override

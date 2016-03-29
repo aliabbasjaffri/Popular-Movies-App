@@ -27,8 +27,10 @@ import android.support.v4.app.TaskStackBuilder;
 import android.text.format.Time;
 import android.util.Log;
 
+import com.popularmoviesapp.BuildConfig;
 import com.popularmoviesapp.R;
 import com.popularmoviesapp.provider.MovieContract;
+import com.popularmoviesapp.utils.Constants;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -44,27 +46,7 @@ import java.util.Vector;
 public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter
 {
     public final String LOG_TAG = MoviesSyncAdapter.class.getSimpleName();
-    // Interval at which to sync with the weather, in seconds.
-    // 60 seconds (1 minute) * 180 = 3 hours
-    public static final int SYNC_INTERVAL = 60 * 180;
-    public static final int SYNC_FLEXTIME = SYNC_INTERVAL/3;
-    private static final long DAY_IN_MILLIS = 1000 * 60 * 60 * 24;
-    private static final int WEATHER_NOTIFICATION_ID = 3004;
-
-
-    static final String[] NOTIFY_WEATHER_PROJECTION = new String[] {
-            MovieContract.WeatherEntry.COLUMN_WEATHER_ID,
-            WeatherContract.WeatherEntry.COLUMN_MAX_TEMP,
-            WeatherContract.WeatherEntry.COLUMN_MIN_TEMP,
-            WeatherContract.WeatherEntry.COLUMN_SHORT_DESC
-    };
-
-    // these indices must match the projection
-    private static final int INDEX_WEATHER_ID = 0;
-    private static final int INDEX_MAX_TEMP = 1;
-    private static final int INDEX_MIN_TEMP = 2;
-    private static final int INDEX_SHORT_DESC = 3;
-
+    
     public MoviesSyncAdapter(Context context, boolean autoInitialize) {
         super(context, autoInitialize);
     }
@@ -73,14 +55,12 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter
     public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
         Log.d(LOG_TAG, "Starting sync");
         //String locationQuery = Utility.getPreferredLocation(getContext());
-
-        // These two need to be declared outside the try/catch
-        // so that they can be closed in the finally block.
+        
         HttpURLConnection urlConnection = null;
         BufferedReader reader = null;
 
         // Will contain the raw JSON response as a string.
-        String forecastJsonStr = null;
+        String movieJsonStr = null;
 
         String format = "json";
         String units = "metric";
@@ -90,20 +70,20 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter
             // Construct the URL for the OpenWeatherMap query
             // Possible parameters are avaiable at OWM's forecast API page, at
             // http://openweathermap.org/API#forecast
-            final String FORECAST_BASE_URL =
-                    "http://api.openweathermap.org/data/2.5/forecast/daily?";
+            final String MOVIE_BASE_URL =
+                    Constants.MOVIE_URL;
             final String QUERY_PARAM = "q";
             final String FORMAT_PARAM = "mode";
             final String UNITS_PARAM = "units";
             final String DAYS_PARAM = "cnt";
             final String APPID_PARAM = "APPID";
 
-            Uri builtUri = Uri.parse(FORECAST_BASE_URL).buildUpon()
+            Uri builtUri = Uri.parse(MOVIE_BASE_URL).buildUpon()
                     .appendQueryParameter(QUERY_PARAM, locationQuery)
                     .appendQueryParameter(FORMAT_PARAM, format)
                     .appendQueryParameter(UNITS_PARAM, units)
                     .appendQueryParameter(DAYS_PARAM, Integer.toString(numDays))
-                    .appendQueryParameter(APPID_PARAM, BuildConfig.OPEN_WEATHER_MAP_API_KEY)
+                    .appendQueryParameter(APPID_PARAM, BuildConfig.THE_MOVIE_DB_API_KEY)
                     .build();
 
             URL url = new URL(builtUri.toString());
@@ -136,8 +116,8 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter
                 // Stream was empty.  No point in parsing.
                 return;
             }
-            forecastJsonStr = buffer.toString();
-            getWeatherDataFromJson(forecastJsonStr, locationQuery);
+            movieJsonStr = buffer.toString();
+            getWeatherDataFromJson(movieJsonStr, locationQuery);
         } catch (IOException e) {
             Log.e(LOG_TAG, "Error ", e);
             // If the code didn't successfully get the weather data, there's no point in attempting
@@ -450,7 +430,7 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter
      */
     public static void configurePeriodicSync(Context context, int syncInterval, int flexTime) {
         Account account = getSyncAccount(context);
-        String authority = context.getString(R.string.content_authority);
+        String authority = context.getString(R.string.authourity);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             // we can enable inexact timers in our periodic sync
             SyncRequest request = new SyncRequest.Builder().
@@ -473,7 +453,7 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter
         bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
         bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
         ContentResolver.requestSync(getSyncAccount(context),
-                context.getString(R.string.content_authority), bundle);
+                context.getString(R.string.authourity), bundle);
     }
 
     /**
@@ -519,12 +499,12 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter
         /*
          * Since we've created an account
          */
-        MoviesSyncAdapter.configurePeriodicSync(context, SYNC_INTERVAL, SYNC_FLEXTIME);
+        MoviesSyncAdapter.configurePeriodicSync(context, Constants.SYNC_INTERVAL, Constants.SYNC_FLEXTIME);
 
         /*
          * Without calling setSyncAutomatically, our periodic sync will not be enabled.
          */
-        ContentResolver.setSyncAutomatically(newAccount, context.getString(R.string.authority), true);
+        ContentResolver.setSyncAutomatically(newAccount, context.getString(R.string.authourity), true);
 
         /*
          * Finally, let's do a sync to get things started
