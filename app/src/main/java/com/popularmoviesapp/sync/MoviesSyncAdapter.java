@@ -55,7 +55,7 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter
     public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
         Log.d(LOG_TAG, "Starting sync");
         //String locationQuery = Utility.getPreferredLocation(getContext());
-        
+
         HttpURLConnection urlConnection = null;
         BufferedReader reader = null;
 
@@ -76,21 +76,24 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter
             final String FORMAT_PARAM = "mode";
             final String UNITS_PARAM = "units";
             final String DAYS_PARAM = "cnt";
-            final String APPID_PARAM = "APPID";
+            final String APPID_PARAM = "api_key";
+
+            String MOVIE_URI_STRING = MOVIE_BASE_URL + "popular" +
+                    "?api_key=7dfa7e8a018b2a3322936f188a2826a2";
+
+            //https://api.themoviedb.org/3/movie/popular?api_key=7dfa7e8a018b2a3322936f188a2826a2
 
             Uri builtUri = Uri.parse(MOVIE_BASE_URL).buildUpon()
-                    .appendQueryParameter(QUERY_PARAM, locationQuery)
-                    .appendQueryParameter(FORMAT_PARAM, format)
-                    .appendQueryParameter(UNITS_PARAM, units)
-                    .appendQueryParameter(DAYS_PARAM, Integer.toString(numDays))
+                    .appendPath(Constants.POPULAR_MOVIES)
+                    .appendPath(QUERY_PARAM)
                     .appendQueryParameter(APPID_PARAM, BuildConfig.THE_MOVIE_DB_API_KEY)
                     .build();
 
-            URL url = new URL(builtUri.toString());
+            URL url = new URL(MOVIE_URI_STRING);//builtUri.toString());
 
             Log.i(LOG_TAG, url.toString());
 
-            // Create the request to OpenWeatherMap, and open the connection
+            // Create the request to MovieApi, and open the connection
             urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setRequestMethod("GET");
             urlConnection.connect();
@@ -147,10 +150,8 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter
      * Fortunately parsing is easy:  constructor takes the JSON string and converts it
      * into an Object hierarchy for us.
      */
-    private void getWeatherDataFromJson(String forecastJsonStr,
-                                        String locationSetting)
-            throws JSONException {
-
+    private void getWeatherDataFromJson(String forecastJsonStr, String locationSetting) throws JSONException
+    {
         // Now we have a String representing the complete forecast in JSON Format.
         // Fortunately parsing is easy:  constructor takes the JSON string and converts it
         // into an Object hierarchy for us.
@@ -256,16 +257,13 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter
 
                 ContentValues weatherValues = new ContentValues();
 
-                weatherValues.put(WeatherContract.WeatherEntry.COLUMN_LOC_KEY, locationId);
-                weatherValues.put(WeatherContract.WeatherEntry.COLUMN_DATE, dateTime);
-                weatherValues.put(WeatherContract.WeatherEntry.COLUMN_HUMIDITY, humidity);
-                weatherValues.put(WeatherContract.WeatherEntry.COLUMN_PRESSURE, pressure);
-                weatherValues.put(WeatherContract.WeatherEntry.COLUMN_WIND_SPEED, windSpeed);
-                weatherValues.put(WeatherContract.WeatherEntry.COLUMN_DEGREES, windDirection);
-                weatherValues.put(WeatherContract.WeatherEntry.COLUMN_MAX_TEMP, high);
-                weatherValues.put(WeatherContract.WeatherEntry.COLUMN_MIN_TEMP, low);
-                weatherValues.put(WeatherContract.WeatherEntry.COLUMN_SHORT_DESC, description);
-                weatherValues.put(WeatherContract.WeatherEntry.COLUMN_WEATHER_ID, weatherId);
+                weatherValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_TITLE, locationId);
+                weatherValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_OVERVIEW, dateTime);
+                weatherValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_POPULARITY, humidity);
+                weatherValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_VOTE_COUNT, pressure);
+                weatherValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_RELEASE_DATE, windSpeed);
+                weatherValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_POSTER_PATH, windDirection);
+                weatherValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_BACKDROP_PATH, high);
 
                 cVVector.add(weatherValues);
             }
@@ -275,12 +273,13 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter
             if ( cVVector.size() > 0 ) {
                 ContentValues[] cvArray = new ContentValues[cVVector.size()];
                 cVVector.toArray(cvArray);
-                getContext().getContentResolver().bulkInsert(WeatherContract.WeatherEntry.CONTENT_URI, cvArray);
+                getContext().getContentResolver().bulkInsert(MovieContract.MovieEntry.CONTENT_URI, cvArray);
 
+                //TODO:Add logic so that it deletes 7 days old data
                 // delete old data so we don't build up an endless history
-                getContext().getContentResolver().delete(WeatherContract.WeatherEntry.CONTENT_URI,
-                        WeatherContract.WeatherEntry.COLUMN_DATE + " <= ?",
-                        new String[] {Long.toString(dayTime.setJulianDay(julianStartDay-1))});
+                //getContext().getContentResolver().delete(MovieContract.MovieEntry.CONTENT_URI,
+                //        MovieContract.MovieEntry.COLUMN_DATE + " <= ?",
+                //        new String[] {Long.toString(dayTime.setJulianDay(julianStartDay-1))});
 
                 notifyWeather();
             }
@@ -306,11 +305,11 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter
             String lastNotificationKey = context.getString(R.string.pref_last_notification);
             long lastSync = prefs.getLong(lastNotificationKey, 0);
 
-            if (System.currentTimeMillis() - lastSync >= DAY_IN_MILLIS) {
+            if (System.currentTimeMillis() - lastSync >= Constants.DAY_IN_MILLIS) {
                 // Last sync was more than 1 day ago, let's send a notification with the weather.
                 String locationQuery = Utility.getPreferredLocation(context);
 
-                Uri weatherUri = WeatherContract.WeatherEntry.buildWeatherLocationWithDate(locationQuery, System.currentTimeMillis());
+                Uri weatherUri = MovieContract.MovieEntry.buildWeatherLocationWithDate(locationQuery, System.currentTimeMillis());
 
                 // we'll query our contentProvider, as always
                 Cursor cursor = context.getContentResolver().query(weatherUri, NOTIFY_WEATHER_PROJECTION, null, null, null);

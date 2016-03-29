@@ -13,7 +13,7 @@ public class Constants {
     public final static String MOVIE_DETAIL_KEY = "movie_detail";
     public static final String POSITION_KEY = "position";
     public final static String MODE_VIEW = "mode_view";
-    public final static String MOVIE_URL = "http://api.themoviedb.org";
+    public final static String MOVIE_URL = "http://api.themoviedb.org/3/movie/";
     public final static String IMAGE_MOVIE_URL = "http://image.tmdb.org/t/p/";
     public final static String IMAGE_SIZE_W185 = "w185/";
     public final static String IMAGE_SIZE_W342 = "w342/";
@@ -30,6 +30,10 @@ public class Constants {
     public static final String REVIEWS = "reviews";
     public static final String MAIN_TRAILER = "main_trailer";
     public static final String SHOW_FAVORITES = "show_favorites";
+
+    public static final String POPULAR_MOVIES = "popular";
+    public static final String TOP_RATED_MOVIES = "top_rated";
+    public static final String UPCOMING_MOVIES = "upcoming";
 
     public static final String[] MOVIE_COLUMNS = {
             MovieContract.MovieEntry.TABLE_NAME + "." + MovieContract.MovieEntry._ID,
@@ -57,6 +61,6 @@ public class Constants {
     // 60 seconds (1 minute) * 180 = 3 hours
     public static final int SYNC_INTERVAL = 60 * 180;
     public static final int SYNC_FLEXTIME = SYNC_INTERVAL/3;
-    private static final long DAY_IN_MILLIS = 1000 * 60 * 60 * 24;
-    private static final int WEATHER_NOTIFICATION_ID = 3004;
+    public static final long DAY_IN_MILLIS = 1000 * 60 * 60 * 24;
+    public static final int WEATHER_NOTIFICATION_ID = 3004;
 }
