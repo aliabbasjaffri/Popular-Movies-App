@@ -28,6 +28,7 @@ import android.text.format.Time;
 import android.util.Log;
 
 import com.popularmoviesapp.R;
+import com.popularmoviesapp.provider.MovieContract;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -52,7 +53,7 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter
 
 
     static final String[] NOTIFY_WEATHER_PROJECTION = new String[] {
-            WeatherContract.WeatherEntry.COLUMN_WEATHER_ID,
+            MovieContract.WeatherEntry.COLUMN_WEATHER_ID,
             WeatherContract.WeatherEntry.COLUMN_MAX_TEMP,
             WeatherContract.WeatherEntry.COLUMN_MIN_TEMP,
             WeatherContract.WeatherEntry.COLUMN_SHORT_DESC
