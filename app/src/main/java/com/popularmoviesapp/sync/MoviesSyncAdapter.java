@@ -7,7 +7,6 @@ import android.app.PendingIntent;
 import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
 import android.content.ContentResolver;
-import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -24,7 +23,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
-import android.text.format.Time;
+import java.text.ParseException;
 import android.util.Log;
 
 import com.popularmoviesapp.BuildConfig;
@@ -41,6 +40,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Vector;
 
 public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter
@@ -56,7 +58,7 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter
     {
         Log.d(LOG_TAG, "Starting sync");
         //TODO: add get from preferences methodology here.
-        //String genreQuery = Utility.getPreferredLocation(getContext());
+        String category = "";//Utility.getPreferredLocation(getContext());
 
         HttpURLConnection urlConnection = null;
         BufferedReader reader = null;
@@ -69,7 +71,7 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter
             final String API_KEY_PARAM = "api_key";
 
             Uri builtUri = Uri.parse(MOVIE_BASE_URL).buildUpon()
-                    .appendPath(Constants.POPULAR_MOVIES)
+                    .appendPath(category)
                     .appendQueryParameter(API_KEY_PARAM, BuildConfig.THE_MOVIE_DB_API_KEY)
                     .build();
 
@@ -85,30 +87,25 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter
             // Read the input stream into a String
             InputStream inputStream = urlConnection.getInputStream();
             StringBuilder buffer = new StringBuilder();
-            if (inputStream == null) {
-                // Nothing to do.
+
+            if (inputStream == null)
                 return;
-            }
+
             reader = new BufferedReader(new InputStreamReader(inputStream));
 
             String line;
-            while ((line = reader.readLine()) != null) {
-                // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
-                // But it does make debugging a *lot* easier if you print out the completed
-                // buffer for debugging.
-                buffer.append(line).append("\n");
-            }
 
-            if (buffer.length() == 0) {
-                // Stream was empty.  No point in parsing.
+            while ((line = reader.readLine()) != null)
+                buffer.append(line).append("\n");
+
+
+            if (buffer.length() == 0)
                 return;
-            }
+
             movieJsonStr = buffer.toString();
-            getMovieDataFromJson(movieJsonStr);
+            getMovieDataFromJson(movieJsonStr , category);
         } catch (IOException e) {
             Log.e(LOG_TAG, "Error ", e);
-            // If the code didn't successfully get the weather data, there's no point in attempting
-            // to parse it.
         } catch (JSONException e) {
             Log.e(LOG_TAG, e.getMessage(), e);
             e.printStackTrace();
@@ -124,7 +121,6 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter
                 }
             }
         }
-        return;
     }
 
     /**
@@ -134,15 +130,8 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter
      * Fortunately parsing is easy:  constructor takes the JSON string and converts it
      * into an Object hierarchy for us.
      */
-    private void getMovieDataFromJson(String movieJsonStr) throws JSONException
+    private void getMovieDataFromJson(String movieJsonStr , String category) throws JSONException
     {
-        // Now we have a String representing the complete forecast in JSON Format.
-        // Fortunately parsing is easy:  constructor takes the JSON string and converts it
-        // into an Object hierarchy for us.
-
-        // These are the names of the JSON objects that need to be extracted.
-
-        // Location information
         final String OMA_TITLE = "title";
         final String OMA_OVERVIEW = "overview";
         final String OMA_POPULARITY = "popularity";
@@ -157,9 +146,6 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter
             JSONObject movieJson = new JSONObject(movieJsonStr);
             JSONArray movieArray = movieJson.getJSONArray(OMA_RESULTS);
 
-            //long locationId = addLocation(locationSetting, cityName, cityLatitude, cityLongitude);
-
-            // Insert the new weather information into the database
             Vector<ContentValues> cVVector = new Vector<>(movieArray.length());
 
             for(int i = 0; i < movieArray.length(); i++)
@@ -190,6 +176,7 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter
                 weatherValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_POPULARITY, popularity);
                 weatherValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_VOTE_COUNT, vote);
                 weatherValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_RELEASE_DATE, releaseDate);
+                weatherValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_CATEGORY, category);
                 weatherValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_POSTER_PATH, posterPath);
                 weatherValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_BACKDROP_PATH, backdropPath);
 
@@ -202,12 +189,6 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter
                 ContentValues[] cvArray = new ContentValues[cVVector.size()];
                 cVVector.toArray(cvArray);
                 getContext().getContentResolver().bulkInsert(MovieContract.MovieEntry.CONTENT_URI, cvArray);
-
-                //TODO:Add logic so that it deletes 7 days old data
-                // delete old data so we don't build up an endless history
-                //getContext().getContentResolver().delete(MovieContract.MovieEntry.CONTENT_URI,
-                //        MovieContract.MovieEntry.COLUMN_DATE + " <= ?",
-                //        new String[] {Long.toString(dayTime.setJulianDay(julianStartDay-1))});
 
                 notifyWeather();
             }
@@ -300,56 +281,6 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter
                 cursor.close();
             }
         }
-    }
-
-    /**
-     * Helper method to handle insertion of a new location in the weather database.
-     *
-     * @param locationSetting The location string used to request updates from the server.
-     * @param cityName A human-readable city name, e.g "Mountain View"
-     * @param lat the latitude of the city
-     * @param lon the longitude of the city
-     * @return the row ID of the added location.
-     */
-    long addLocation(String locationSetting, String cityName, double lat, double lon) {
-        long locationId;
-
-        // First, check if the location with this city name exists in the db
-        Cursor locationCursor = getContext().getContentResolver().query(
-                WeatherContract.LocationEntry.CONTENT_URI,
-                new String[]{WeatherContract.LocationEntry._ID},
-                WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING + " = ?",
-                new String[]{locationSetting},
-                null);
-
-        if (locationCursor.moveToFirst()) {
-            int locationIdIndex = locationCursor.getColumnIndex(WeatherContract.LocationEntry._ID);
-            locationId = locationCursor.getLong(locationIdIndex);
-        } else {
-            // Now that the content provider is set up, inserting rows of data is pretty simple.
-            // First create a ContentValues object to hold the data you want to insert.
-            ContentValues locationValues = new ContentValues();
-
-            // Then add the data, along with the corresponding name of the data type,
-            // so the content provider knows what kind of value is being inserted.
-            locationValues.put(WeatherContract.LocationEntry.COLUMN_CITY_NAME, cityName);
-            locationValues.put(WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING, locationSetting);
-            locationValues.put(WeatherContract.LocationEntry.COLUMN_COORD_LAT, lat);
-            locationValues.put(WeatherContract.LocationEntry.COLUMN_COORD_LONG, lon);
-
-            // Finally, insert location data into the database.
-            Uri insertedUri = getContext().getContentResolver().insert(
-                    WeatherContract.LocationEntry.CONTENT_URI,
-                    locationValues
-            );
-
-            // The resulting URI contains the ID for the row.  Extract the locationId from the Uri.
-            locationId = ContentUris.parseId(insertedUri);
-        }
-
-        locationCursor.close();
-        // Wait, that worked?  Yes!
-        return locationId;
     }
 
     /**

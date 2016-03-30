@@ -3,4 +3,24 @@
     <string name="action_settings">Settings</string>
     <string name="authourity">com.udacity.popularmoviesapp</string>
     <string name="sync_account_type">popularmoviesapp.com</string>
+
+    <string name="movie_category_mode">Movie Category</string>
+    <string name="movie_category_key" translatable="false">movie_category_mode</string>
+    <string name="movie_category_mode_default" translatable="false">popular</string>
+
+    <string name="popular_movie_category_label">Popular</string>
+    <string name="top_rated_movie_category_label">Top Rated</string>
+    <string name="upcoming_movie_category_label">Upcoming</string>
+
+    <string name="popular_movie_category_value">popular</string>
+    <string name="top_rated_movie_category_value">top_rated</string>
+    <string name="upcoming_movie_category_value">upcoming</string>
+
+
+    <string name="pref_enable_notifications_label">Movie Notifications</string>
+    <string name="pref_enable_notifications_key" translatable="false">enable_notifications</string>
+    <string name="pref_enable_notifications_true">Enabled</string>
+    <string name="pref_enable_notifications_false">Not Enabled</string>
+    <string name="pref_enable_notifications_default" translatable="false">true</string>
+
 </resources>

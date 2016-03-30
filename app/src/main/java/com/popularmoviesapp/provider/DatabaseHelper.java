@@ -11,7 +11,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class DatabaseHelper extends SQLiteOpenHelper
 {
     private static final String DATABASE_NAME = "popularMovies.db";
-    private static final int DATABASE_VERSION = 4;
+    private static final int DATABASE_VERSION = 5;
 
     public DatabaseHelper(Context context)
     {
@@ -29,7 +29,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
                         MovieContract.MovieEntry.COLUMN_MOVIE_POPULARITY + " TEXT NOT NULL, " +
                         MovieContract.MovieEntry.COLUMN_MOVIE_VOTE_COUNT + " TEXT NOT NULL, " +
                         MovieContract.MovieEntry.COLUMN_MOVIE_RELEASE_DATE + " TEXT NOT NULL, " +
-                        MovieContract.MovieEntry.COLUMN_MOVIE_GENRE + " TEXT NOT NULL, " +
+                        MovieContract.MovieEntry.COLUMN_MOVIE_CATEGORY + " TEXT NOT NULL, " +
                         MovieContract.MovieEntry.COLUMN_MOVIE_POSTER_PATH + " TEXT NOT NULL, " +
                         MovieContract.MovieEntry.COLUMN_MOVIE_BACKDROP_PATH + " TEXT NOT NULL, " +
                         MovieContract.MovieEntry.COLUMN_MOVIE_LIKED + " TEXT DEFAULT 0" +
@@ -43,7 +43,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
                         MovieContract.FavouriteEntry.COLUMN_MOVIE_POPULARITY + " TEXT NOT NULL, " +
                         MovieContract.FavouriteEntry.COLUMN_MOVIE_VOTE_COUNT + " TEXT NOT NULL, " +
                         MovieContract.FavouriteEntry.COLUMN_MOVIE_RELEASE_DATE + " TEXT NOT NULL, " +
-                        MovieContract.FavouriteEntry.COLUMN_MOVIE_GENRE + " TEXT NOT NULL, " +
+                        MovieContract.FavouriteEntry.COLUMN_MOVIE_CATEGORY + " TEXT NOT NULL, " +
                         MovieContract.FavouriteEntry.COLUMN_MOVIE_POSTER_PATH + " TEXT NOT NULL, " +
                         MovieContract.FavouriteEntry.COLUMN_MOVIE_BACKDROP_PATH + " TEXT NOT NULL " +
                         " ); ";

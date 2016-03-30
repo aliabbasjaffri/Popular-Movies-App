@@ -42,7 +42,7 @@ public class Constants {
             MovieContract.MovieEntry.COLUMN_MOVIE_POPULARITY,
             MovieContract.MovieEntry.COLUMN_MOVIE_VOTE_COUNT,
             MovieContract.MovieEntry.COLUMN_MOVIE_RELEASE_DATE,
-            MovieContract.MovieEntry.COLUMN_MOVIE_GENRE,
+            MovieContract.MovieEntry.COLUMN_MOVIE_CATEGORY,
             MovieContract.MovieEntry.COLUMN_MOVIE_POSTER_PATH,
             MovieContract.MovieEntry.COLUMN_MOVIE_BACKDROP_PATH,
             MovieContract.MovieEntry.COLUMN_MOVIE_LIKED
