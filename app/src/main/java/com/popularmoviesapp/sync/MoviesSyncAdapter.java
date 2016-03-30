@@ -52,14 +52,15 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter
     }
 
     @Override
-    public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
+    public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult)
+    {
         Log.d(LOG_TAG, "Starting sync");
+        //TODO: add get from preferences methodology here.
         //String locationQuery = Utility.getPreferredLocation(getContext());
 
         HttpURLConnection urlConnection = null;
         BufferedReader reader = null;
 
-        // Will contain the raw JSON response as a string.
         String movieJsonStr = null;
 
         String format = "json";
@@ -67,29 +68,17 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter
         int numDays = 14;
 
         try {
-            // Construct the URL for the OpenWeatherMap query
-            // Possible parameters are avaiable at OWM's forecast API page, at
-            // http://openweathermap.org/API#forecast
+            // Construct the URL for the MovieDB query
             final String MOVIE_BASE_URL =
                     Constants.MOVIE_URL;
-            final String QUERY_PARAM = "q";
-            final String FORMAT_PARAM = "mode";
-            final String UNITS_PARAM = "units";
-            final String DAYS_PARAM = "cnt";
             final String APPID_PARAM = "api_key";
-
-            String MOVIE_URI_STRING = MOVIE_BASE_URL + "popular" +
-                    "?api_key=7dfa7e8a018b2a3322936f188a2826a2";
-
-            //https://api.themoviedb.org/3/movie/popular?api_key=7dfa7e8a018b2a3322936f188a2826a2
 
             Uri builtUri = Uri.parse(MOVIE_BASE_URL).buildUpon()
                     .appendPath(Constants.POPULAR_MOVIES)
-                    .appendPath(QUERY_PARAM)
                     .appendQueryParameter(APPID_PARAM, BuildConfig.THE_MOVIE_DB_API_KEY)
                     .build();
 
-            URL url = new URL(MOVIE_URI_STRING);//builtUri.toString());
+            URL url = new URL(builtUri.toString());
 
             Log.i(LOG_TAG, url.toString());
 
@@ -120,7 +109,7 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter
                 return;
             }
             movieJsonStr = buffer.toString();
-            getWeatherDataFromJson(movieJsonStr, locationQuery);
+            getMovieDataFromJson(movieJsonStr);//, locationQuery);
         } catch (IOException e) {
             Log.e(LOG_TAG, "Error ", e);
             // If the code didn't successfully get the weather data, there's no point in attempting
@@ -150,7 +139,8 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter
      * Fortunately parsing is easy:  constructor takes the JSON string and converts it
      * into an Object hierarchy for us.
      */
-    private void getWeatherDataFromJson(String forecastJsonStr, String locationSetting) throws JSONException
+    private void getMovieDataFromJson(String forecastJsonStr)//, String locationSetting)
+            throws JSONException
     {
         // Now we have a String representing the complete forecast in JSON Format.
         // Fortunately parsing is easy:  constructor takes the JSON string and converts it
@@ -195,7 +185,7 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter
             double cityLatitude = cityCoord.getDouble(OWM_LATITUDE);
             double cityLongitude = cityCoord.getDouble(OWM_LONGITUDE);
 
-            long locationId = addLocation(locationSetting, cityName, cityLatitude, cityLongitude);
+            //long locationId = addLocation(locationSetting, cityName, cityLatitude, cityLongitude);
 
             // Insert the new weather information into the database
             Vector<ContentValues> cVVector = new Vector<ContentValues>(weatherArray.length());

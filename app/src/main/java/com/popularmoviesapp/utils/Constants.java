@@ -42,6 +42,7 @@ public class Constants {
             MovieContract.MovieEntry.COLUMN_MOVIE_POPULARITY,
             MovieContract.MovieEntry.COLUMN_MOVIE_VOTE_COUNT,
             MovieContract.MovieEntry.COLUMN_MOVIE_RELEASE_DATE,
+            MovieContract.MovieEntry.COLUMN_MOVIE_GENRE,
             MovieContract.MovieEntry.COLUMN_MOVIE_POSTER_PATH,
             MovieContract.MovieEntry.COLUMN_MOVIE_BACKDROP_PATH,
             MovieContract.MovieEntry.COLUMN_MOVIE_LIKED
@@ -53,9 +54,10 @@ public class Constants {
     public static final int MOVIE_POPULARITY = 3;
     public static final int MOVIE_VOTE_COUNT = 4;
     public static final int MOVIE_RELEASE_DATE = 5;
-    public static final int MOVIE_POSTER_PATH = 6;
-    public static final int MOVIE_BACKDROP_PATH =7;
-    public static final int MOVIE_LIKED = 8;
+    public static final int MOVIE_GENRE = 6;
+    public static final int MOVIE_POSTER_PATH = 7;
+    public static final int MOVIE_BACKDROP_PATH = 8;
+    public static final int MOVIE_LIKED = 9;
 
     // Interval at which to sync with the weather, in seconds.
     // 60 seconds (1 minute) * 180 = 3 hours
