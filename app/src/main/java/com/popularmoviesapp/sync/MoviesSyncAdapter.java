@@ -56,26 +56,21 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter
     {
         Log.d(LOG_TAG, "Starting sync");
         //TODO: add get from preferences methodology here.
-        //String locationQuery = Utility.getPreferredLocation(getContext());
+        //String genreQuery = Utility.getPreferredLocation(getContext());
 
         HttpURLConnection urlConnection = null;
         BufferedReader reader = null;
 
         String movieJsonStr = null;
 
-        String format = "json";
-        String units = "metric";
-        int numDays = 14;
-
         try {
-            // Construct the URL for the MovieDB query
             final String MOVIE_BASE_URL =
                     Constants.MOVIE_URL;
-            final String APPID_PARAM = "api_key";
+            final String API_KEY_PARAM = "api_key";
 
             Uri builtUri = Uri.parse(MOVIE_BASE_URL).buildUpon()
                     .appendPath(Constants.POPULAR_MOVIES)
-                    .appendQueryParameter(APPID_PARAM, BuildConfig.THE_MOVIE_DB_API_KEY)
+                    .appendQueryParameter(API_KEY_PARAM, BuildConfig.THE_MOVIE_DB_API_KEY)
                     .build();
 
             URL url = new URL(builtUri.toString());
@@ -89,7 +84,7 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter
 
             // Read the input stream into a String
             InputStream inputStream = urlConnection.getInputStream();
-            StringBuffer buffer = new StringBuffer();
+            StringBuilder buffer = new StringBuilder();
             if (inputStream == null) {
                 // Nothing to do.
                 return;
@@ -101,7 +96,7 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter
                 // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
                 // But it does make debugging a *lot* easier if you print out the completed
                 // buffer for debugging.
-                buffer.append(line + "\n");
+                buffer.append(line).append("\n");
             }
 
             if (buffer.length() == 0) {
@@ -109,7 +104,7 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter
                 return;
             }
             movieJsonStr = buffer.toString();
-            getMovieDataFromJson(movieJsonStr);//, locationQuery);
+            getMovieDataFromJson(movieJsonStr);
         } catch (IOException e) {
             Log.e(LOG_TAG, "Error ", e);
             // If the code didn't successfully get the weather data, there's no point in attempting
@@ -139,8 +134,7 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter
      * Fortunately parsing is easy:  constructor takes the JSON string and converts it
      * into an Object hierarchy for us.
      */
-    private void getMovieDataFromJson(String forecastJsonStr)//, String locationSetting)
-            throws JSONException
+    private void getMovieDataFromJson(String movieJsonStr) throws JSONException
     {
         // Now we have a String representing the complete forecast in JSON Format.
         // Fortunately parsing is easy:  constructor takes the JSON string and converts it
@@ -149,111 +143,55 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter
         // These are the names of the JSON objects that need to be extracted.
 
         // Location information
-        final String OWM_CITY = "city";
-        final String OWM_CITY_NAME = "name";
-        final String OWM_COORD = "coord";
+        final String OMA_TITLE = "title";
+        final String OMA_OVERVIEW = "overview";
+        final String OMA_POPULARITY = "popularity";
+        final String OMA_VOTE = "vote_average";
+        final String OMA_RELEASE_DATE = "release_date";
+        final String OMA_POSTER_PATH = "poster_path";
+        final String OMA_BACKDROP_PATH = "backdrop_path";
 
-        // Location coordinate
-        final String OWM_LATITUDE = "lat";
-        final String OWM_LONGITUDE = "lon";
-
-        // Weather information.  Each day's forecast info is an element of the "list" array.
-        final String OWM_LIST = "list";
-
-        final String OWM_PRESSURE = "pressure";
-        final String OWM_HUMIDITY = "humidity";
-        final String OWM_WINDSPEED = "speed";
-        final String OWM_WIND_DIRECTION = "deg";
-
-        // All temperatures are children of the "temp" object.
-        final String OWM_TEMPERATURE = "temp";
-        final String OWM_MAX = "max";
-        final String OWM_MIN = "min";
-
-        final String OWM_WEATHER = "weather";
-        final String OWM_DESCRIPTION = "main";
-        final String OWM_WEATHER_ID = "id";
+        final String OMA_RESULTS = "results";
 
         try {
-            JSONObject forecastJson = new JSONObject(forecastJsonStr);
-            JSONArray weatherArray = forecastJson.getJSONArray(OWM_LIST);
-
-            JSONObject cityJson = forecastJson.getJSONObject(OWM_CITY);
-            String cityName = cityJson.getString(OWM_CITY_NAME);
-
-            JSONObject cityCoord = cityJson.getJSONObject(OWM_COORD);
-            double cityLatitude = cityCoord.getDouble(OWM_LATITUDE);
-            double cityLongitude = cityCoord.getDouble(OWM_LONGITUDE);
+            JSONObject movieJson = new JSONObject(movieJsonStr);
+            JSONArray movieArray = movieJson.getJSONArray(OMA_RESULTS);
 
             //long locationId = addLocation(locationSetting, cityName, cityLatitude, cityLongitude);
 
             // Insert the new weather information into the database
-            Vector<ContentValues> cVVector = new Vector<ContentValues>(weatherArray.length());
+            Vector<ContentValues> cVVector = new Vector<>(movieArray.length());
 
-            // OWM returns daily forecasts based upon the local time of the city that is being
-            // asked for, which means that we need to know the GMT offset to translate this data
-            // properly.
-
-            // Since this data is also sent in-order and the first day is always the
-            // current day, we're going to take advantage of that to get a nice
-            // normalized UTC date for all of our weather.
-
-            Time dayTime = new Time();
-            dayTime.setToNow();
-
-            // we start at the day returned by local time. Otherwise this is a mess.
-            int julianStartDay = Time.getJulianDay(System.currentTimeMillis(), dayTime.gmtoff);
-
-            // now we work exclusively in UTC
-            dayTime = new Time();
-
-            for(int i = 0; i < weatherArray.length(); i++) {
-                // These are the values that will be collected.
-                long dateTime;
-                double pressure;
-                int humidity;
-                double windSpeed;
-                double windDirection;
-
-                double high;
-                double low;
-
-                String description;
-                int weatherId;
+            for(int i = 0; i < movieArray.length(); i++)
+            {
+                String title;
+                String overview;
+                long popularity;
+                long vote;
+                String releaseDate;
+                String posterPath;
+                String backdropPath;
 
                 // Get the JSON object representing the day
-                JSONObject dayForecast = weatherArray.getJSONObject(i);
+                JSONObject movieObject = movieArray.getJSONObject(i);
 
-                // Cheating to convert this to UTC time, which is what we want anyhow
-                dateTime = dayTime.setJulianDay(julianStartDay+i);
-
-                pressure = dayForecast.getDouble(OWM_PRESSURE);
-                humidity = dayForecast.getInt(OWM_HUMIDITY);
-                windSpeed = dayForecast.getDouble(OWM_WINDSPEED);
-                windDirection = dayForecast.getDouble(OWM_WIND_DIRECTION);
-
-                // Description is in a child array called "weather", which is 1 element long.
-                // That element also contains a weather code.
-                JSONObject weatherObject =
-                        dayForecast.getJSONArray(OWM_WEATHER).getJSONObject(0);
-                description = weatherObject.getString(OWM_DESCRIPTION);
-                weatherId = weatherObject.getInt(OWM_WEATHER_ID);
-
-                // Temperatures are in a child object called "temp".  Try not to name variables
-                // "temp" when working with temperature.  It confuses everybody.
-                JSONObject temperatureObject = dayForecast.getJSONObject(OWM_TEMPERATURE);
-                high = temperatureObject.getDouble(OWM_MAX);
-                low = temperatureObject.getDouble(OWM_MIN);
+                title = movieObject.getString(OMA_TITLE);
+                overview = movieObject.getString(OMA_OVERVIEW);
+                popularity = movieObject.getLong(OMA_POPULARITY);
+                vote = movieObject.getLong(OMA_VOTE);
+                releaseDate = movieObject.getString(OMA_RELEASE_DATE);
+                posterPath = movieObject.getString(OMA_POSTER_PATH);
+                backdropPath = movieObject.getString(OMA_BACKDROP_PATH);
 
                 ContentValues weatherValues = new ContentValues();
 
-                weatherValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_TITLE, locationId);
-                weatherValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_OVERVIEW, dateTime);
-                weatherValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_POPULARITY, humidity);
-                weatherValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_VOTE_COUNT, pressure);
-                weatherValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_RELEASE_DATE, windSpeed);
-                weatherValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_POSTER_PATH, windDirection);
-                weatherValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_BACKDROP_PATH, high);
+                weatherValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_TITLE, title);
+                weatherValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_OVERVIEW, overview);
+                weatherValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_POPULARITY, popularity);
+                weatherValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_VOTE_COUNT, vote);
+                weatherValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_RELEASE_DATE, releaseDate);
+                weatherValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_POSTER_PATH, posterPath);
+                weatherValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_BACKDROP_PATH, backdropPath);
 
                 cVVector.add(weatherValues);
             }

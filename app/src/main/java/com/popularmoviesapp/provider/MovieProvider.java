@@ -19,7 +19,6 @@ public class MovieProvider extends ContentProvider
 
     static final int MOVIE = 200;
     static final int MOVIE_WITH_ID = 201;
-    static final int MOVIE_WITH_ID_AND_GENRE = 202;
 
     static final int FAVOURITE = 300;
     static final int FAVOURITE_WITH_ID = 301;
@@ -237,7 +236,6 @@ public class MovieProvider extends ContentProvider
         final String authority = MovieContract.CONTENT_AUTHORITY;
         matcher.addURI(authority, MovieContract.PATH_MOVIE, MOVIE);
         matcher.addURI(authority, MovieContract.PATH_MOVIE + "/*", MOVIE_WITH_ID);
-        matcher.addURI(authority, MovieContract.PATH_MOVIE + "/*/#", MOVIE_WITH_ID_AND_GENRE);
 
         matcher.addURI(authority, MovieContract.PATH_FAVOURITE, FAVOURITE);
         matcher.addURI(authority, MovieContract.PATH_FAVOURITE + "/*", FAVOURITE_WITH_ID);
