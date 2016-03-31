@@ -10,6 +10,7 @@ import com.popularmoviesapp.R;
 import com.popularmoviesapp.fragment.MainActivityFragment;
 import com.popularmoviesapp.provider.DatabaseHelper;
 import com.popularmoviesapp.provider.MovieContract;
+import com.popularmoviesapp.sync.MoviesSyncAdapter;
 
 import android.support.v7.widget.Toolbar;
 import android.support.design.widget.Snackbar;
@@ -33,6 +34,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
                         .setAction("Action", null).show();
             }
         });
+        MoviesSyncAdapter.initializeSyncAdapter(this);
     }
 
     @Override
