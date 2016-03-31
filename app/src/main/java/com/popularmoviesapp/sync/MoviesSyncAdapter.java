@@ -14,9 +14,6 @@ import android.content.SharedPreferences;
 import android.content.SyncRequest;
 import android.content.SyncResult;
 import android.content.res.Resources;
-import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -24,13 +21,13 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.popularmoviesapp.BuildConfig;
 import com.popularmoviesapp.R;
 import com.popularmoviesapp.activity.MainActivity;
 import com.popularmoviesapp.provider.MovieContract;
 import com.popularmoviesapp.utils.Constants;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -45,7 +42,6 @@ import java.util.Vector;
 public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter
 {
     public final String LOG_TAG = MoviesSyncAdapter.class.getSimpleName();
-    private static final int WEATHER_NOTIFICATION_ID = 3004;
     
     public MoviesSyncAdapter(Context context, boolean autoInitialize) {
         super(context, autoInitialize);
@@ -56,7 +52,7 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter
     {
         Log.d(LOG_TAG, "Starting sync");
         //TODO: add get from preferences methodology here.
-        String category = "";//Utility.getPreferredLocation(getContext());
+        String category = Constants.POPULAR_MOVIES;//Utility.getPreferredLocation(getContext());
 
         HttpURLConnection urlConnection = null;
         BufferedReader reader = null;
@@ -75,7 +71,7 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter
 
             URL url = new URL(builtUri.toString());
 
-            Log.i(LOG_TAG, url.toString());
+            Log.v(LOG_TAG, url.toString());
 
             // Create the request to MovieApi, and open the connection
             urlConnection = (HttpURLConnection) url.openConnection();
@@ -223,9 +219,9 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter
             // notifications.  Just throw in some data.
             NotificationCompat.Builder mBuilder =
                     new NotificationCompat.Builder(getContext())
-                            //        .setColor(resources.getColor(R.color.sunshine_light_blue))
-                            //        .setSmallIcon(iconId)
-                            //        .setLargeIcon(largeIcon)
+                                    .setColor(context.getResources().getColor(R.color.colorPrimaryTransparent))
+                                    .setSmallIcon(R.mipmap.ic_launcher)
+                                    //.setLargeIcon(R.mipmap.ic_launcher)
                             .setContentTitle(title)
                             .setContentText(contentText);
 
@@ -249,7 +245,7 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter
             NotificationManager mNotificationManager =
                     (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
             // WEATHER_NOTIFICATION_ID allows you to update the notification later on.
-            mNotificationManager.notify(WEATHER_NOTIFICATION_ID, mBuilder.build());
+            mNotificationManager.notify(Constants.WEATHER_NOTIFICATION_ID, mBuilder.build());
         }
     }
 
@@ -301,9 +297,14 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter
         Account newAccount = new Account(
                 context.getString(R.string.app_name), context.getString(R.string.sync_account_type));
 
+        Log.v("Account Object Created" , "YES!");
+
         // If the password doesn't exist, the account doesn't exist
         if ( null == accountManager.getPassword(newAccount) ) {
 
+            Log.v("AccountManager getpass" , "YES!");
+            //Log.v("AccountManager PASSWORD YESSSSSS!!" , accountManager.getPassword(newAccount));
+            Toast.makeText(context , accountManager.getPassword(newAccount) , Toast.LENGTH_LONG ).show();
         /*
          * Add the account and account type, no password or user data
          * If successful, return the Account object, otherwise report an error.
@@ -327,6 +328,7 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter
         /*
          * Since we've created an account
          */
+        Toast.makeText(context, "In Account Created", Toast.LENGTH_SHORT).show();
         MoviesSyncAdapter.configurePeriodicSync(context, Constants.SYNC_INTERVAL, Constants.SYNC_FLEXTIME);
 
         /*
@@ -341,6 +343,7 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter
     }
 
     public static void initializeSyncAdapter(Context context) {
+        Log.v("initialized Adapter" , "YES!");
         getSyncAccount(context);
     }
 }

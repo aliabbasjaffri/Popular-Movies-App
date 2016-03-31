@@ -59,10 +59,9 @@ public class Constants {
     public static final int MOVIE_BACKDROP_PATH = 8;
     public static final int MOVIE_LIKED = 9;
 
-    // Interval at which to sync with the weather, in seconds.
+    // Interval at which to sync with the movies, in seconds.
     // 60 seconds (1 minute) * 180 = 3 hours
-    public static final int SYNC_INTERVAL = 60 * 180;
+    public static final int SYNC_INTERVAL = 30;
     public static final int SYNC_FLEXTIME = SYNC_INTERVAL/3;
-    public static final long DAY_IN_MILLIS = 1000 * 60 * 60 * 24;
     public static final int WEATHER_NOTIFICATION_ID = 3004;
 }

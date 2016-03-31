@@ -3,6 +3,7 @@ package com.popularmoviesapp.activity;
 import android.content.ContentValues;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -30,11 +31,13 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                Snackbar.make(view, "Replace with your own bloody action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
         });
+        Log.v("Main Activity", "YES!");
         MoviesSyncAdapter.initializeSyncAdapter(this);
+        Log.v("Main Activity", "NOOO!");
     }
 
     @Override
