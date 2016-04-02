@@ -16,7 +16,7 @@
         android:columnWidth="150dp"
         android:numColumns="auto_fit"
         android:verticalSpacing="2dp"
-        android:horizontalSpacing="5dp"
+        android:horizontalSpacing="2dp"
         android:stretchMode="columnWidth"
         android:id="@+id/mainMoviesGrid">
     </GridView>

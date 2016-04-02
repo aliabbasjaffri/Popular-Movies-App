@@ -18,6 +18,7 @@ import android.widget.LinearLayout;
 import com.popularmoviesapp.fragment.MainActivityFragment;
 import com.popularmoviesapp.helper.GridViewHolder;
 import com.popularmoviesapp.utils.Constants;
+import com.popularmoviesapp.utils.Utility;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
@@ -81,7 +82,7 @@ public class MovieGridAdapter extends CursorAdapter
         viewHolder.mGridMovieItemAverageRating.setText(movieAverageRating);
 
         String movieReleaseYear = cursor.getString(Constants.MOVIE_RELEASE_DATE );
-        viewHolder.mGridMovieItemDate.setText(movieReleaseYear);
+        viewHolder.mGridMovieItemDate.setText(Utility.getYearFromDate(movieReleaseYear));
     }
 
     private void  setIconForLiked(GridViewHolder holder, String value) {

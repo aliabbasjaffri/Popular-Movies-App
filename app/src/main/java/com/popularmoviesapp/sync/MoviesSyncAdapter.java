@@ -28,6 +28,8 @@ import com.popularmoviesapp.R;
 import com.popularmoviesapp.activity.MainActivity;
 import com.popularmoviesapp.provider.MovieContract;
 import com.popularmoviesapp.utils.Constants;
+import com.popularmoviesapp.utils.Utility;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -51,8 +53,7 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter
     public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult)
     {
         Log.d(LOG_TAG, "Starting sync");
-        //TODO: add get from preferences methodology here.
-        String category = Constants.POPULAR_MOVIES;//Utility.getPreferredLocation(getContext());
+        String category = Utility.getPreferredCategory(getContext());
 
         HttpURLConnection urlConnection = null;
         BufferedReader reader = null;
@@ -297,14 +298,8 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter
         Account newAccount = new Account(
                 context.getString(R.string.app_name), context.getString(R.string.sync_account_type));
 
-        Log.v("Account Object Created" , "YES!");
-
         // If the password doesn't exist, the account doesn't exist
         if ( null == accountManager.getPassword(newAccount) ) {
-
-            Log.v("AccountManager getpass" , "YES!");
-            //Log.v("AccountManager PASSWORD YESSSSSS!!" , accountManager.getPassword(newAccount));
-            Toast.makeText(context , accountManager.getPassword(newAccount) , Toast.LENGTH_LONG ).show();
         /*
          * Add the account and account type, no password or user data
          * If successful, return the Account object, otherwise report an error.
@@ -328,7 +323,6 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter
         /*
          * Since we've created an account
          */
-        Toast.makeText(context, "In Account Created", Toast.LENGTH_SHORT).show();
         MoviesSyncAdapter.configurePeriodicSync(context, Constants.SYNC_INTERVAL, Constants.SYNC_FLEXTIME);
 
         /*
@@ -343,7 +337,6 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter
     }
 
     public static void initializeSyncAdapter(Context context) {
-        Log.v("initialized Adapter" , "YES!");
         getSyncAccount(context);
     }
 }

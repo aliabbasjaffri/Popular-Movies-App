@@ -29,7 +29,7 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 
     GridView gridView = null;
     private SharedPreferences sharedPref = null;
-    MovieGridAdapter mMovieGridAdapter = null;
+    public MovieGridAdapter mMovieGridAdapter = null;
     int mPosition = GridView.INVALID_POSITION;
     static final String SELECTED_KEY = "selectedPosition";
 
@@ -40,6 +40,7 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
         gridView = (GridView)view.findViewById(R.id.mainMoviesGrid);
         mMovieGridAdapter = new MovieGridAdapter(getActivity() , null , 0);
         gridView.setAdapter(mMovieGridAdapter);
+        mMovieGridAdapter.notifyDataSetChanged();
 
         return view;
     }

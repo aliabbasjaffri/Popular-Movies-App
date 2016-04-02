@@ -1,6 +1,6 @@
 package com.popularmoviesapp.activity;
 
-import android.content.ContentValues;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -9,8 +9,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import com.popularmoviesapp.R;
 import com.popularmoviesapp.fragment.MainActivityFragment;
-import com.popularmoviesapp.provider.DatabaseHelper;
-import com.popularmoviesapp.provider.MovieContract;
 import com.popularmoviesapp.sync.MoviesSyncAdapter;
 
 import android.support.v7.widget.Toolbar;
@@ -35,15 +33,13 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
                         .setAction("Action", null).show();
             }
         });
-        Log.v("Main Activity", "YES!");
         MoviesSyncAdapter.initializeSyncAdapter(this);
-        Log.v("Main Activity", "NOOO!");
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        getMenuInflater().inflate(R.menu.menu, menu);
         return true;
     }
 
@@ -56,6 +52,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            startActivity(new Intent( this , SettingsActivity.class));
             return true;
         }
 
@@ -65,5 +62,12 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
     @Override
     public void onMovieItemSelected(Uri dataUri) {
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MainActivityFragment mainActivityFragment = (MainActivityFragment)getSupportFragmentManager().findFragmentById(R.id.mainFragment);
+        mainActivityFragment.mMovieGridAdapter.notifyDataSetChanged();
     }
 }

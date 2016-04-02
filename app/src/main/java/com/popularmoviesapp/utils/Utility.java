@@ -19,22 +19,25 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.text.format.Time;
-
 import com.popularmoviesapp.R;
-
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 
 public class Utility {
-    //public static String getPreferredLocation(Context context) {
-     //   SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-     //   return prefs.getString(context.getString(R.string.settings_location_key), context.getString(R.string.settings_location_default));
-    //}
+    public static String getPreferredCategory(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        return prefs.getString(context.getString(R.string.movie_category_key), context.getString(R.string.movie_category_mode_default));
+    }
 
-    static String formatDate(long dateInMillis) {
-        Date date = new Date(dateInMillis);
-        return DateFormat.getDateInstance().format(date);
+    public static String getYearFromDate(String date)
+    {
+        String dateParts [] = date.split("-");
+        return dateParts[0];
+    }
+
+    public static String getMonthFromDate(String date)
+    {
+        String dateParts [] = date.split("-");
+        return dateParts[1];
     }
 
     // Format used for storing dates in the database.  Also used for converting those strings
