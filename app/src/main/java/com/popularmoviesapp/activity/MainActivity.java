@@ -68,8 +68,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
     protected void onResume() {
         super.onResume();
         MainActivityFragment mainActivityFragment = (MainActivityFragment)getSupportFragmentManager().findFragmentById(R.id.mainFragment);
-        //TODO: must implement this in its proper place
-        MoviesSyncAdapter.syncImmediately(this);
-        mainActivityFragment.mMovieGridAdapter.notifyDataSetChanged();
+        mainActivityFragment.onCategoryChanged();
     }
 }

@@ -17,6 +17,7 @@ import android.widget.ListView;
 import com.popularmoviesapp.R;
 import com.popularmoviesapp.adapter.MovieGridAdapter;
 import com.popularmoviesapp.provider.MovieContract;
+import com.popularmoviesapp.sync.MoviesSyncAdapter;
 import com.popularmoviesapp.utils.Constants;
 
 /**
@@ -24,7 +25,7 @@ import com.popularmoviesapp.utils.Constants;
  */
 public class MainActivityFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>
 {
-    private static final int FORECAST_LOADER = 0;
+    private static final int MOVIE_LOADER = 0;
     public static final String LOG_TAG = MainActivityFragment.class.getSimpleName();
 
     GridView gridView = null;
@@ -48,7 +49,7 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     @Override
     public void onActivityCreated(Bundle savedInstanceState)
     {
-        getLoaderManager().initLoader(FORECAST_LOADER, null, this);
+        getLoaderManager().initLoader(MOVIE_LOADER, null, this);
         super.onActivityCreated(savedInstanceState);
     }
 
@@ -71,6 +72,13 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     public void onLoaderReset(Loader<Cursor> loader)
     {
         mMovieGridAdapter.swapCursor(null);
+    }
+
+    public void onCategoryChanged()
+    {
+        MoviesSyncAdapter.syncImmediately(getActivity());
+        mMovieGridAdapter.notifyDataSetChanged();
+        getLoaderManager().restartLoader(MOVIE_LOADER, null, this);
     }
 
 
