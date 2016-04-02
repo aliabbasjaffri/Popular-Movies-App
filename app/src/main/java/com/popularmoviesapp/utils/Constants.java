@@ -60,8 +60,8 @@ public class Constants {
     public static final int MOVIE_LIKED = 9;
 
     // Interval at which to sync with the movies, in seconds.
-    // 60 seconds (1 minute) * 180 = 3 hours
-    public static final int SYNC_INTERVAL = 30;
-    public static final int SYNC_FLEXTIME = SYNC_INTERVAL/3;
+    // (60 seconds (1 minute) * 60 * 12 hours) seconds
+    public static final int SYNC_INTERVAL = 60 * 60 * 12;
+    public static final int SYNC_FLEXTIME = SYNC_INTERVAL/2;
     public static final int WEATHER_NOTIFICATION_ID = 3004;
 }
