@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import com.popularmoviesapp.R;
 import com.popularmoviesapp.fragment.MainActivityFragment;
 import com.popularmoviesapp.sync.MoviesSyncAdapter;
+import com.popularmoviesapp.utils.Utility;
 
 import android.support.v7.widget.Toolbar;
 import android.support.design.widget.Snackbar;
@@ -18,12 +19,18 @@ import android.support.design.widget.FloatingActionButton;
 
 public class MainActivity extends AppCompatActivity implements MainActivityFragment.MovieCallback
 {
+    private static final String DETAILFRAGMENT_TAG = "DFTAG";
+    private boolean mTwoPane;
+    String mCategory;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        mCategory = Utility.getPreferredCategory(this);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -67,7 +74,21 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
     @Override
     protected void onResume() {
         super.onResume();
+        String category = Utility.getPreferredCategory(this);
         MainActivityFragment mainActivityFragment = (MainActivityFragment)getSupportFragmentManager().findFragmentById(R.id.mainFragment);
-        mainActivityFragment.onCategoryChanged();
+
+        if (category!= null && !category.equals(mCategory))
+        {
+            if ( null != mainActivityFragment )
+            {
+                mainActivityFragment.onCategoryChanged();
+            }
+            //if ( null != detailFragment )
+            //{
+            //    detailFragment.onLocationChanged(location);
+            //}
+            mCategory = category;
+        }
+        mainActivityFragment.mMovieGridAdapter.notifyDataSetChanged();
     }
 }
