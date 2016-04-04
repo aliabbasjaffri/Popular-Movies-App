@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import com.popularmoviesapp.R;
+import com.popularmoviesapp.fragment.DetailActivityFragment;
 import com.popularmoviesapp.fragment.MainActivityFragment;
 import com.popularmoviesapp.sync.MoviesSyncAdapter;
 import com.popularmoviesapp.utils.Utility;
@@ -29,6 +30,11 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        getSupportActionBar().setDisplayUseLogoEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        //getSupportActionBar().setIcon(R.drawable.ic_logo);
+        getSupportActionBar().setTitle("");
 
         mCategory = Utility.getPreferredCategory(this);
 
@@ -67,8 +73,20 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
     }
 
     @Override
-    public void onMovieItemSelected(Uri dataUri) {
+    public void onMovieItemSelected(Uri dataUri)
+    {
+        if (mTwoPane)
+        {
+            Bundle args = new Bundle();
+            args.putParcelable(DetailActivityFragment.DETAIL_URI, dataUri);
 
+            DetailActivityFragment fragment = new DetailActivityFragment();
+            fragment.setArguments(args);
+
+            getSupportFragmentManager().beginTransaction().replace(R.id.weather_detail_container, fragment, DETAILFRAGMENT_TAG).commit();
+        }
+        else
+            startActivity(new Intent(this, DetailActivity.class).setData(dataUri));
     }
 
     @Override
@@ -76,6 +94,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
         super.onResume();
         String category = Utility.getPreferredCategory(this);
         MainActivityFragment mainActivityFragment = (MainActivityFragment)getSupportFragmentManager().findFragmentById(R.id.mainFragment);
+        DetailActivityFragment detailFragment = (DetailActivityFragment)getSupportFragmentManager().findFragmentByTag(DETAILFRAGMENT_TAG);
 
         if (category!= null && !category.equals(mCategory))
         {
@@ -83,10 +102,10 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
             {
                 mainActivityFragment.onCategoryChanged();
             }
-            //if ( null != detailFragment )
-            //{
+            if ( null != detailFragment )
+            {
             //    detailFragment.onLocationChanged(location);
-            //}
+            }
             mCategory = category;
         }
         mainActivityFragment.mMovieGridAdapter.notifyDataSetChanged();

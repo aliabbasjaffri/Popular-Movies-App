@@ -13,6 +13,8 @@ import com.popularmoviesapp.R;
  */
 public class DetailActivityFragment extends Fragment {
 
+    public static final String DETAIL_URI = "URI";
+
     public DetailActivityFragment() {
     }
 
