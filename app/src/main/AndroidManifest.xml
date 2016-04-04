@@ -5,12 +5,9 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <!-- Permissions required by the sync adapter -->
-    <uses-permission
-        android:name="android.permission.READ_SYNC_SETTINGS"/>
-    <uses-permission
-        android:name="android.permission.WRITE_SYNC_SETTINGS"/>
-    <uses-permission
-        android:name="android.permission.AUTHENTICATE_ACCOUNTS"/>
+    <uses-permission android:name="android.permission.READ_SYNC_SETTINGS" />
+    <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
+    <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
 
     <application
         android:name=".application.MovieApplication"
@@ -38,21 +35,25 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activity.MainActivity" />
         </activity>
-        <provider
-            android:authorities="@string/authourity"
-            android:name=".provider.MovieProvider"
-            android:syncable="true"
-            android:exported="true"/>
 
-        <service android:name=".service.MoviesService"/>
-        <receiver android:name=".service.MoviesService$AlarmReceiver" android:enabled="true"/>
+        <provider
+            android:name=".provider.MovieProvider"
+            android:authorities="@string/authourity"
+            android:exported="true"
+            android:syncable="true" />
+
+        <service android:name=".service.MoviesService" />
+
+        <receiver
+            android:name=".service.MoviesService$AlarmReceiver"
+            android:enabled="true" />
 
         <!-- SyncAdapter's dummy authentication service -->
-        <service
-            android:name=".sync.MoviesAuthenticatorService">
+        <service android:name=".sync.MoviesAuthenticatorService">
             <intent-filter>
                 <action android:name="android.accounts.AccountAuthenticator" />
             </intent-filter>
+
             <meta-data
                 android:name="android.accounts.AccountAuthenticator"
                 android:resource="@xml/authenticator" />
@@ -65,10 +66,21 @@
             <intent-filter>
                 <action android:name="android.content.SyncAdapter" />
             </intent-filter>
+
             <meta-data
                 android:name="android.content.SyncAdapter"
                 android:resource="@xml/syncadapter" />
         </service>
+
+        <activity
+            android:name=".activity.DetailActivity"
+            android:label="@string/title_activity_detail"
+            android:parentActivityName=".activity.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.popularmoviesapp.activity.MainActivity" />
+        </activity>
     </application>
 
 </manifest>
