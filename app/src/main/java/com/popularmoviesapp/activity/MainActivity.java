@@ -3,8 +3,6 @@ package com.popularmoviesapp.activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import com.popularmoviesapp.R;
@@ -14,10 +12,7 @@ import com.popularmoviesapp.provider.MovieContract;
 import com.popularmoviesapp.sync.MoviesSyncAdapter;
 import com.popularmoviesapp.utils.Utility;
 
-import android.support.v7.widget.Toolbar;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.design.widget.FloatingActionButton;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity implements MainActivityFragment.MovieCallback
@@ -105,7 +100,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
     protected void onResume() {
         super.onResume();
         String category = Utility.getPreferredCategory(this);
-        MainActivityFragment mainActivityFragment = (MainActivityFragment)getSupportFragmentManager().findFragmentById(R.id.movies_forecast);
+        MainActivityFragment mainActivityFragment = (MainActivityFragment)getSupportFragmentManager().findFragmentById(R.id.movies_list);
         DetailActivityFragment detailFragment = (DetailActivityFragment)getSupportFragmentManager().findFragmentByTag(DETAILFRAGMENT_TAG);
 
         if (category!= null && !category.equals(mCategory))
