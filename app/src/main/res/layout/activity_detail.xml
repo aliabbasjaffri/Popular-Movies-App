@@ -5,5 +5,5 @@
     android:id="@+id/movie_detail_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.sunshine.DetailActivity"
+    tools:context="com.popularmoviesapp.activity.MainActivity"
     tools:ignore="MergeRootFrame" />

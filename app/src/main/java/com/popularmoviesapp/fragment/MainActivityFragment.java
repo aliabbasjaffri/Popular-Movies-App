@@ -11,6 +11,7 @@ import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ListView;
 
@@ -19,6 +20,7 @@ import com.popularmoviesapp.adapter.MovieGridAdapter;
 import com.popularmoviesapp.provider.MovieContract;
 import com.popularmoviesapp.sync.MoviesSyncAdapter;
 import com.popularmoviesapp.utils.Constants;
+import com.popularmoviesapp.utils.Utility;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -41,7 +43,21 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
         gridView = (GridView)view.findViewById(R.id.mainMoviesGrid);
         mMovieGridAdapter = new MovieGridAdapter(getActivity() , null , 0);
         gridView.setAdapter(mMovieGridAdapter);
-        mMovieGridAdapter.notifyDataSetChanged();
+
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView adapterView, View view, int position, long l) {
+                Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
+                mPosition = position;
+                if (cursor != null) {
+                    ((MovieCallback) getActivity())
+                            .onMovieItemSelected(MovieContract.MovieEntry.buildMovieUri(cursor.getLong(Constants.MOVIE_ID)));
+                }
+            }
+        });
+
+        if (savedInstanceState != null && savedInstanceState.containsKey(SELECTED_KEY))
+            mPosition = savedInstanceState.getInt(SELECTED_KEY);
 
         return view;
     }

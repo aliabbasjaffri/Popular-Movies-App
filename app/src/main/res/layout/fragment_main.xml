@@ -1,14 +1,8 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
-    android:paddingBottom="@dimen/gridViewSpacing"
-    android:paddingLeft="@dimen/gridViewSpacing"
-    android:paddingRight="@dimen/gridViewSpacing"
-    android:paddingTop="@dimen/gridViewSpacing"
-    tools:context=".fragment.MainActivityFragment"
-    tools:showIn="@layout/activity_main">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <GridView
         android:layout_width="match_parent"
@@ -21,4 +15,4 @@
         android:id="@+id/mainMoviesGrid">
     </GridView>
 
-</LinearLayout>
+</FrameLayout>

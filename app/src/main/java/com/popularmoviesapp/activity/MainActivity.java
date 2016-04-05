@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import com.popularmoviesapp.R;
 import com.popularmoviesapp.fragment.DetailActivityFragment;
 import com.popularmoviesapp.fragment.MainActivityFragment;
+import com.popularmoviesapp.provider.MovieContract;
 import com.popularmoviesapp.sync.MoviesSyncAdapter;
 import com.popularmoviesapp.utils.Utility;
 
@@ -17,6 +18,7 @@ import android.support.v7.widget.Toolbar;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.design.widget.FloatingActionButton;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity implements MainActivityFragment.MovieCallback
 {
@@ -27,25 +29,13 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mCategory = Utility.getPreferredCategory(this);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
         getSupportActionBar().setDisplayUseLogoEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-        //getSupportActionBar().setIcon(R.drawable.ic_logo);
+        getSupportActionBar().setIcon(R.drawable.ic_logo);
         getSupportActionBar().setTitle("");
-
-        mCategory = Utility.getPreferredCategory(this);
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own bloody action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
 
         if (findViewById(R.id.movie_detail_container) != null)
         {
@@ -103,17 +93,19 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
             DetailActivityFragment fragment = new DetailActivityFragment();
             fragment.setArguments(args);
 
-            getSupportFragmentManager().beginTransaction().replace(R.id.weather_detail_container, fragment, DETAILFRAGMENT_TAG).commit();
+            getSupportFragmentManager().beginTransaction().replace(R.id.movie_detail_container, fragment, DETAILFRAGMENT_TAG).commit();
         }
         else
             startActivity(new Intent(this, DetailActivity.class).setData(dataUri));
+
+        Toast.makeText(MainActivity.this, "Item Clicked " + MovieContract.MovieEntry.getMovieIDFromUri(dataUri), Toast.LENGTH_SHORT).show();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         String category = Utility.getPreferredCategory(this);
-        MainActivityFragment mainActivityFragment = (MainActivityFragment)getSupportFragmentManager().findFragmentById(R.id.mainFragment);
+        MainActivityFragment mainActivityFragment = (MainActivityFragment)getSupportFragmentManager().findFragmentById(R.id.movies_forecast);
         DetailActivityFragment detailFragment = (DetailActivityFragment)getSupportFragmentManager().findFragmentByTag(DETAILFRAGMENT_TAG);
 
         if (category!= null && !category.equals(mCategory))

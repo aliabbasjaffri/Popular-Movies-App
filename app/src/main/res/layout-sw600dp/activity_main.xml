@@ -5,11 +5,11 @@
     android:baselineAligned="false"
     android:divider="?android:attr/dividerHorizontal"
     android:orientation="horizontal"
-    tools:context="com.example.android.sunshine.app.MainActivity">
+    tools:context="com.popularmoviesapp.fragment.MainActivityFragment">
 
     <fragment
-        android:id="@+id/fragment_forecast"
-        android:name="com.popularmoviesapp.fragment.DetailActivityFragment"
+        android:id="@+id/movies_forecast"
+        android:name="com.popularmoviesapp.fragment.MainActivityFragment"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="2"
@@ -17,6 +17,7 @@
 
     <FrameLayout
         android:id="@+id/weather_detail_container"
+        android:name="com.popularmoviesapp.fragment.DetailActivityFragment"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="4" />
