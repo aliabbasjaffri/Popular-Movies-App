@@ -27,6 +27,7 @@
     <string name="notification_content">%1$s New Movies in %2$s Category</string>
     <string name="title_activity_detail">DetailActivity</string>
 
-    <string name="image_backdrop">Image Backdrop</string>
+    <string name="movie_backdrop_playbutton">Movie Backdrop PlayButton</string>
+    <string name="image_poster">Image Poster</string>
 
 </resources>
