@@ -5,4 +5,5 @@
     <color name="colorAccent">#FF4081</color>
     <color name="colorPrimaryTransparent">#903F51B5</color>
     <color name="colorWhite">#FFFFFF</color>
+    <color name="list_dropdown_divider_color">#92a3a3a3</color>
 </resources>

@@ -30,4 +30,8 @@
     <string name="movie_backdrop_playbutton">Movie Backdrop PlayButton</string>
     <string name="image_poster">Image Poster</string>
 
+    <string name="placeholder_movie_plot">Twenty-two years after the events of Jurassic Park, Isla Nublar now features a fully functioning dinosaur theme park, Jurassic World, as originally envisioned by John Hammond.
+        Twenty-two years after the events of Jurassic Park, Isla Nublar now features a fully functioning dinosaur theme park, Jurassic World, as originally envisioned by John Hammond.
+    </string>
+
 </resources>
