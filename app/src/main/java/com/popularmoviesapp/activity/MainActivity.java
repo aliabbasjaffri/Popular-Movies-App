@@ -92,8 +92,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
         }
         else
             startActivity(new Intent(this, DetailActivity.class).setData(dataUri));
-
-        Toast.makeText(MainActivity.this, "Item Clicked " + MovieContract.MovieEntry.getMovieIDFromUri(dataUri), Toast.LENGTH_SHORT).show();
     }
 
     @Override
