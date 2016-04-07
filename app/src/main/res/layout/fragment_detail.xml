@@ -104,7 +104,7 @@
             android:layout_alignBottom="@+id/fragmentDetailsMovieDetailsContainer"/>
 
         <TextView
-            android:id="@+id/fragmentDetailsOverviewText"
+            android:id="@+id/fragmentDetailsMovieOverviewText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/divider2"
