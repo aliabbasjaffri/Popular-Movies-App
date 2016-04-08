@@ -60,14 +60,6 @@ public class DetailActivityFragment extends Fragment  implements LoaderManager.L
         movieRating = (TextView) view.findViewById(R.id.fragmentDetailsMovieRatingText);
         movieOverview = (TextView) view.findViewById(R.id.fragmentDetailsMovieOverviewText);
 
-        //String imageUrl = Constants.IMAGE_MOVIE_URL + Constants.IMAGE_SIZE_W500 + mMovieData.backdropPath;
-
-        //Picasso.with(getActivity())
-         //       .load(imageUrl)
-         //       .placeholder(R.drawable.ic_movie_placeholder)
-         //       .error(R.drawable.ic_movie_placeholder)
-         //       .into(mBackdropMovie);
-
         return view;
     }
 
@@ -125,7 +117,7 @@ public class DetailActivityFragment extends Fragment  implements LoaderManager.L
             favoriteButtonImage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    //TODO: on click to add in database. also persist the movie liked field.
+                    //TODO: on click to add in database. Also persist the movie liked field.
                 }
             });
 

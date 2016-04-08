@@ -13,7 +13,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SyncRequest;
 import android.content.SyncResult;
-import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -21,7 +20,6 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.popularmoviesapp.BuildConfig;
 import com.popularmoviesapp.R;
@@ -127,6 +125,7 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter
      */
     private void getMovieDataFromJson(String movieJsonStr , String category) throws JSONException
     {
+        final String OMA_ID = "id";
         final String OMA_TITLE = "title";
         final String OMA_OVERVIEW = "overview";
         final String OMA_POPULARITY = "popularity";
@@ -145,6 +144,7 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter
 
             for(int i = 0; i < movieArray.length(); i++)
             {
+                String id;
                 String title;
                 String overview;
                 long popularity;
@@ -152,10 +152,12 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter
                 String releaseDate;
                 String posterPath;
                 String backdropPath;
+                String youtubeKey;
 
                 // Get the JSON object representing the day
                 JSONObject movieObject = movieArray.getJSONObject(i);
 
+                id = movieObject.getString(OMA_ID);
                 title = movieObject.getString(OMA_TITLE);
                 overview = movieObject.getString(OMA_OVERVIEW);
                 popularity = movieObject.getLong(OMA_POPULARITY);
@@ -163,9 +165,11 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter
                 releaseDate = movieObject.getString(OMA_RELEASE_DATE);
                 posterPath = movieObject.getString(OMA_POSTER_PATH);
                 backdropPath = movieObject.getString(OMA_BACKDROP_PATH);
+                youtubeKey = getMovieYoutubeID(id);
 
                 ContentValues weatherValues = new ContentValues();
 
+                weatherValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_API_ID, id);
                 weatherValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_TITLE, title);
                 weatherValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_OVERVIEW, overview);
                 weatherValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_POPULARITY, popularity);
@@ -174,6 +178,7 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter
                 weatherValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_CATEGORY, category);
                 weatherValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_POSTER_PATH, posterPath);
                 weatherValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_BACKDROP_PATH, backdropPath);
+                weatherValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_YOUTUBE_KEY, youtubeKey);
 
                 cVVector.add(weatherValues);
             }
@@ -194,6 +199,91 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter
             Log.e(LOG_TAG, e.getMessage(), e);
             e.printStackTrace();
         }
+    }
+
+    private String getMovieYoutubeID(String id)
+    {
+        HttpURLConnection urlConnection = null;
+        BufferedReader reader = null;
+        StringBuilder buffer = new StringBuilder();
+
+        try {
+            final String MOVIE_BASE_URL =
+                    Constants.MOVIE_URL;
+            final String API_KEY_PARAM = "api_key";
+
+            Uri builtUri = Uri.parse(MOVIE_BASE_URL).buildUpon()
+                    .appendPath(id)
+                    .appendPath(Constants.VIDEO)
+                    .appendQueryParameter(API_KEY_PARAM, BuildConfig.THE_MOVIE_DB_API_KEY)
+                    .build();
+
+            URL url = new URL(builtUri.toString());
+
+            Log.v(LOG_TAG, url.toString());
+
+            urlConnection = (HttpURLConnection) url.openConnection();
+            urlConnection.setRequestMethod("GET");
+            urlConnection.connect();
+
+            InputStream inputStream = urlConnection.getInputStream();
+
+            if (inputStream == null)
+                return null;
+
+            reader = new BufferedReader(new InputStreamReader(inputStream));
+
+            String line;
+
+            while ((line = reader.readLine()) != null)
+                buffer.append(line).append("\n");
+
+            if (buffer.length() == 0)
+                return null;
+
+        } catch (IOException e) {
+            Log.e(LOG_TAG, "Error ", e);
+        }
+        finally
+        {
+            if (urlConnection != null) {
+                urlConnection.disconnect();
+            }
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (final IOException e) {
+                    Log.e(LOG_TAG, "Error closing stream", e);
+                }
+            }
+        }
+        return getMovieYouTubeKeyFromJSON(buffer.toString());
+    }
+
+    private String getMovieYouTubeKeyFromJSON(String JSON)
+    {
+        final String OMA_RESULTS = "results";
+        final String OMA_TYPE = "type";
+        final String OMA_KEY = "key";
+        String youtubeKey = "";
+
+        try {
+            JSONObject movieVideoJson = new JSONObject(JSON);
+            JSONArray movieVideoArray = movieVideoJson.getJSONArray(OMA_RESULTS);
+
+            for (int i = 0; i < movieVideoArray.length(); i++)
+            {
+                JSONObject movieObject = movieVideoArray.getJSONObject(i);
+
+                if(movieObject.getString(OMA_TYPE).equals(Constants.TRAILER))
+                    youtubeKey = movieObject.getString(OMA_KEY);
+            }
+        }
+        catch (JSONException e) {
+            Log.e(LOG_TAG, e.getMessage(), e);
+            e.printStackTrace();
+        }
+        return youtubeKey;
     }
 
     private void moviesInsertedNotification(int insertedItems, String category)

@@ -11,7 +11,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class DatabaseHelper extends SQLiteOpenHelper
 {
     private static final String DATABASE_NAME = "popularMovies.db";
-    private static final int DATABASE_VERSION = 7;
+    private static final int DATABASE_VERSION = 8;
 
     public DatabaseHelper(Context context)
     {
@@ -24,6 +24,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
         final String SQL_CREATE_MOVIE_TABLE =
                 "CREATE TABLE " + MovieContract.MovieEntry.TABLE_NAME + " (" +
                         MovieContract.MovieEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                        MovieContract.MovieEntry.COLUMN_MOVIE_API_ID + " TEXT NOT NULL, " +
                         MovieContract.MovieEntry.COLUMN_MOVIE_TITLE + " TEXT NOT NULL, " +
                         MovieContract.MovieEntry.COLUMN_MOVIE_OVERVIEW + " TEXT NOT NULL, " +
                         MovieContract.MovieEntry.COLUMN_MOVIE_POPULARITY + " TEXT NOT NULL, " +
@@ -32,12 +33,14 @@ public class DatabaseHelper extends SQLiteOpenHelper
                         MovieContract.MovieEntry.COLUMN_MOVIE_CATEGORY + " TEXT NOT NULL, " +
                         MovieContract.MovieEntry.COLUMN_MOVIE_POSTER_PATH + " TEXT NOT NULL, " +
                         MovieContract.MovieEntry.COLUMN_MOVIE_BACKDROP_PATH + " TEXT NOT NULL, " +
-                        MovieContract.MovieEntry.COLUMN_MOVIE_LIKED + " TEXT DEFAULT 0" +
+                        MovieContract.MovieEntry.COLUMN_MOVIE_LIKED + " TEXT DEFAULT 0, " +
+                        MovieContract.MovieEntry.COLUMN_MOVIE_YOUTUBE_KEY + " TEXT" +
                         " ); ";
 
         final String SQL_CREATE_FAVOURITES_TABLE =
                 "CREATE TABLE " + MovieContract.FavouriteEntry.TABLE_NAME + " (" +
                         MovieContract.FavouriteEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                        MovieContract.FavouriteEntry.COLUMN_MOVIE_API_ID + " TEXT NOT NULL, " +
                         MovieContract.FavouriteEntry.COLUMN_MOVIE_TITLE + " TEXT NOT NULL, " +
                         MovieContract.FavouriteEntry.COLUMN_MOVIE_OVERVIEW + " TEXT NOT NULL, " +
                         MovieContract.FavouriteEntry.COLUMN_MOVIE_POPULARITY + " TEXT NOT NULL, " +
@@ -45,7 +48,10 @@ public class DatabaseHelper extends SQLiteOpenHelper
                         MovieContract.FavouriteEntry.COLUMN_MOVIE_RELEASE_DATE + " TEXT NOT NULL, " +
                         MovieContract.FavouriteEntry.COLUMN_MOVIE_CATEGORY + " TEXT NOT NULL, " +
                         MovieContract.FavouriteEntry.COLUMN_MOVIE_POSTER_PATH + " TEXT NOT NULL, " +
-                        MovieContract.FavouriteEntry.COLUMN_MOVIE_BACKDROP_PATH + " TEXT NOT NULL " +
+                        MovieContract.FavouriteEntry.COLUMN_MOVIE_BACKDROP_PATH + " TEXT NOT NULL, " +
+                        MovieContract.FavouriteEntry.COLUMN_MOVIE_YOUTUBE_KEY + " TEXT, " +
+                        MovieContract.FavouriteEntry.COLUMN_MOVIE_BACKDROP_IMAGE_BLOB + " BLOB, " +
+                        MovieContract.FavouriteEntry.COLUMN_MOVIE_POSTER_IMAGE_BLOB + " BLOB " +
                         " ); ";
 
         db.execSQL(SQL_CREATE_MOVIE_TABLE);

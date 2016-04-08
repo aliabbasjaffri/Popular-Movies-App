@@ -18,6 +18,7 @@ public class MovieContract
 
     public interface MoviesColumns
     {
+        String COLUMN_MOVIE_API_ID = "movie_api_id";
         String COLUMN_MOVIE_TITLE = "movie_title";
         String COLUMN_MOVIE_OVERVIEW = "movie_overview";
         String COLUMN_MOVIE_POPULARITY = "movie_popularity";
@@ -26,6 +27,13 @@ public class MovieContract
         String COLUMN_MOVIE_CATEGORY = "movie_category";
         String COLUMN_MOVIE_POSTER_PATH = "movie_poster_path";
         String COLUMN_MOVIE_BACKDROP_PATH = "movie_backdrop_path";
+        String COLUMN_MOVIE_YOUTUBE_KEY = "movie_youtube_key";
+    }
+
+    public interface FavoriteColumns
+    {
+        String COLUMN_MOVIE_BACKDROP_IMAGE_BLOB = "backdrop_image";
+        String COLUMN_MOVIE_POSTER_IMAGE_BLOB = "poster_image";
     }
 
     public static final class MovieEntry implements BaseColumns , MoviesColumns
@@ -50,7 +58,7 @@ public class MovieContract
         }
     }
 
-    public static final class FavouriteEntry implements BaseColumns , MoviesColumns
+    public static final class FavouriteEntry implements BaseColumns , MoviesColumns, FavoriteColumns
     {
         public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon().appendPath(PATH_FAVOURITE).build();
 
