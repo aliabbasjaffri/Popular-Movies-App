@@ -3,6 +3,7 @@ package com.popularmoviesapp.fragment;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
@@ -143,12 +144,7 @@ public class DetailActivityFragment extends Fragment  implements LoaderManager.L
             movieOverview.setText(data.getString(Constants.MOVIE_OVERVIEW));
 
             if(data.getString(Constants.MOVIE_YOUTUBE_KEY).equals(""))
-            {
-                youtubeKey = getMovieYoutubeID(data.getString(Constants.MOVIE_API_ID));
-                ContentValues movieValues = new ContentValues();
-                movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_YOUTUBE_KEY, youtubeKey);
-                getContext().getContentResolver().update(mUri, movieValues, "movie_id = ?", new String[]{data.getString(Constants.MOVIE_API_ID)});
-            }
+                new GetYoutubeKeyAsyncTask().execute(data.getString(Constants.MOVIE_API_ID));
             else
                 youtubeKey = data.getString(Constants.MOVIE_YOUTUBE_KEY);
         }
@@ -215,7 +211,7 @@ public class DetailActivityFragment extends Fragment  implements LoaderManager.L
                 }
             }
         }
-        return getMovieYouTubeKeyFromJSON(buffer.toString());
+        return buffer.toString();
     }
 
     private String getMovieYouTubeKeyFromJSON(String JSON)
@@ -242,5 +238,27 @@ public class DetailActivityFragment extends Fragment  implements LoaderManager.L
             e.printStackTrace();
         }
         return youtubeKey;
+    }
+
+    private class GetYoutubeKeyAsyncTask extends AsyncTask<String , Void , String>
+    {
+        private String movieID;
+
+        @Override
+        protected String doInBackground(String... params)
+        {
+            movieID = params[0];
+            return getMovieYoutubeID(params[0]);
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+
+            youtubeKey = getMovieYouTubeKeyFromJSON(s);
+            ContentValues movieValues = new ContentValues();
+            movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_YOUTUBE_KEY, youtubeKey);
+            getContext().getContentResolver().update(MovieContract.MovieEntry.CONTENT_URI, movieValues, MovieContract.MovieEntry.COLUMN_MOVIE_API_ID + " = ?", new String[]{movieID});
+        }
     }
 }

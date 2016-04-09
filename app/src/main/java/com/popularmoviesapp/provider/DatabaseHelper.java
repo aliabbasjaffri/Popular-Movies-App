@@ -11,7 +11,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class DatabaseHelper extends SQLiteOpenHelper
 {
     private static final String DATABASE_NAME = "popularMovies.db";
-    private static final int DATABASE_VERSION = 9;
+    private static final int DATABASE_VERSION = 11;
 
     public DatabaseHelper(Context context)
     {
@@ -34,7 +34,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
                         MovieContract.MovieEntry.COLUMN_MOVIE_POSTER_PATH + " TEXT NOT NULL, " +
                         MovieContract.MovieEntry.COLUMN_MOVIE_BACKDROP_PATH + " TEXT NOT NULL, " +
                         MovieContract.MovieEntry.COLUMN_MOVIE_LIKED + " TEXT DEFAULT 0, " +
-                        MovieContract.MovieEntry.COLUMN_MOVIE_YOUTUBE_KEY + " TEXT" +
+                        MovieContract.MovieEntry.COLUMN_MOVIE_YOUTUBE_KEY + " TEXT DEFAULT '' " +
                         " ); ";
 
         final String SQL_CREATE_FAVOURITES_TABLE =

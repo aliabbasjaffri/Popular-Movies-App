@@ -193,17 +193,19 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter
 
     private void insertUniqueMovies(Vector<ContentValues> cVVector , String category)
     {
+        Vector<ContentValues> copyVector = new Vector<>(cVVector);
         Cursor moviesInMoviesTable = getContext().getContentResolver().query(MovieContract.MovieEntry.CONTENT_URI , Constants.MOVIE_COLUMNS , null , null , null);
+
         if( moviesInMoviesTable != null)
         {
             for (ContentValues value : cVVector)
                 if( movieExistsInTable(moviesInMoviesTable,value.getAsString(MovieContract.MovieEntry.COLUMN_MOVIE_API_ID)))
-                    cVVector.remove(value);
+                    copyVector.remove(value);
         }
 
-        if ( cVVector.size() > 0 ) {
-            ContentValues[] cvArray = new ContentValues[cVVector.size()];
-            cVVector.toArray(cvArray);
+        if ( copyVector.size() > 0 ) {
+            ContentValues[] cvArray = new ContentValues[copyVector.size()];
+            copyVector.toArray(cvArray);
             int inserted = getContext().getContentResolver().bulkInsert(MovieContract.MovieEntry.CONTENT_URI, cvArray);
 
             moviesInsertedNotification(inserted, category);
