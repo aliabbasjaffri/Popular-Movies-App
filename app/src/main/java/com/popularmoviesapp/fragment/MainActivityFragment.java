@@ -73,7 +73,8 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         String sortOrder = MovieContract.MovieEntry.COLUMN_MOVIE_POPULARITY + " ASC";
         Uri movieUri = MovieContract.MovieEntry.CONTENT_URI;
-        return new CursorLoader(getActivity(), movieUri, Constants.MOVIE_COLUMNS , null, null, sortOrder);
+        return new CursorLoader(getActivity(), movieUri, Constants.MOVIE_COLUMNS , MovieContract.MovieEntry.COLUMN_MOVIE_CATEGORY + " = ?" ,
+                new String [] {Utility.getPreferredCategory(getActivity())}, sortOrder);
     }
 
     @Override
@@ -94,6 +95,13 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     {
         MoviesSyncAdapter.syncImmediately(getActivity());
         mMovieGridAdapter.notifyDataSetChanged();
+        getLoaderManager().restartLoader(MOVIE_LOADER, null, this);
+    }
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
         getLoaderManager().restartLoader(MOVIE_LOADER, null, this);
     }
 

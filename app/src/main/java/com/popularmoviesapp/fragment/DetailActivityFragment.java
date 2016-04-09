@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.popularmoviesapp.BuildConfig;
 import com.popularmoviesapp.R;
@@ -33,6 +34,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Objects;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -54,6 +56,7 @@ public class DetailActivityFragment extends Fragment  implements LoaderManager.L
 
     Uri mUri;
     String youtubeKey;
+    String movieName;
 
     public DetailActivityFragment() {
     }
@@ -138,7 +141,7 @@ public class DetailActivityFragment extends Fragment  implements LoaderManager.L
 
             favoriteButtonImage.setImageResource(data.getString(Constants.MOVIE_LIKED).equals("0") ? R.drawable.ic_favorite_border : R.drawable.ic_favorite);
 
-            movieTitle.setText(data.getString(Constants.MOVIE_TITLE));
+            movieTitle.setText(movieName = data.getString(Constants.MOVIE_TITLE));
             movieReleaseDate.setText(data.getString(Constants.MOVIE_RELEASE_DATE));
             movieRating.setText(data.getString(Constants.MOVIE_POPULARITY));
             movieOverview.setText(data.getString(Constants.MOVIE_OVERVIEW));
@@ -222,14 +225,22 @@ public class DetailActivityFragment extends Fragment  implements LoaderManager.L
         String youtubeKey = "";
 
         try {
+            Log.v("Video Wali JSON" , JSON);
             JSONObject movieVideoJson = new JSONObject(JSON);
             JSONArray movieVideoArray = movieVideoJson.getJSONArray(OMA_RESULTS);
+
+            if(movieVideoArray.isNull(0))
+                return "";
 
             for (int i = 0; i < movieVideoArray.length(); i++)
             {
                 JSONObject movieObject = movieVideoArray.getJSONObject(i);
 
-                if(movieObject.getString(OMA_TYPE).equals(Constants.TRAILER))
+                if(movieObject.getString(OMA_TYPE).equals(Constants.TRAILER)) {
+                    youtubeKey = movieObject.getString(OMA_KEY);
+                    break;
+                }
+                if(movieObject.getString(OMA_TYPE).equals(Constants.CLIP))
                     youtubeKey = movieObject.getString(OMA_KEY);
             }
         }
@@ -256,9 +267,14 @@ public class DetailActivityFragment extends Fragment  implements LoaderManager.L
             super.onPostExecute(s);
 
             youtubeKey = getMovieYouTubeKeyFromJSON(s);
-            ContentValues movieValues = new ContentValues();
-            movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_YOUTUBE_KEY, youtubeKey);
-            getContext().getContentResolver().update(MovieContract.MovieEntry.CONTENT_URI, movieValues, MovieContract.MovieEntry.COLUMN_MOVIE_API_ID + " = ?", new String[]{movieID});
+
+            if(!youtubeKey.equals("")) {
+                ContentValues movieValues = new ContentValues();
+                movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_YOUTUBE_KEY, youtubeKey);
+                getActivity().getContentResolver().update(MovieContract.MovieEntry.CONTENT_URI, movieValues, MovieContract.MovieEntry.COLUMN_MOVIE_API_ID + " = ?", new String[]{movieID});
+            }
+            else
+                Toast.makeText(getActivity(), "No Video URL For " + movieName, Toast.LENGTH_LONG).show();
         }
     }
 }

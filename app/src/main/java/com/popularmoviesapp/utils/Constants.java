@@ -23,6 +23,7 @@ public class Constants {
     public static final String YOU_TUBE_IMG_URL = "http://img.youtube.com/vi/%s/default.jpg";
     public static final String YOU_TUBE = "YouTube";
     public static final String TRAILER = "Trailer";
+    public static final String CLIP = "Clip";
     public static final String MAIN_TRAILER = "main_trailer";
     public static final String SHOW_FAVORITES = "show_favorites";
     public static final String POPULAR_MOVIES = "popular";
