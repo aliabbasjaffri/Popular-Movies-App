@@ -13,6 +13,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SyncRequest;
 import android.content.SyncResult;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -152,7 +153,6 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter
                 String releaseDate;
                 String posterPath;
                 String backdropPath;
-                String youtubeKey;
 
                 // Get the JSON object representing the day
                 JSONObject movieObject = movieArray.getJSONObject(i);
@@ -165,33 +165,23 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter
                 releaseDate = movieObject.getString(OMA_RELEASE_DATE);
                 posterPath = movieObject.getString(OMA_POSTER_PATH);
                 backdropPath = movieObject.getString(OMA_BACKDROP_PATH);
-                youtubeKey = getMovieYoutubeID(id);
 
-                ContentValues weatherValues = new ContentValues();
+                ContentValues movieValues = new ContentValues();
 
-                weatherValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_API_ID, id);
-                weatherValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_TITLE, title);
-                weatherValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_OVERVIEW, overview);
-                weatherValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_POPULARITY, popularity);
-                weatherValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_VOTE_COUNT, vote);
-                weatherValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_RELEASE_DATE, releaseDate);
-                weatherValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_CATEGORY, category);
-                weatherValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_POSTER_PATH, posterPath);
-                weatherValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_BACKDROP_PATH, backdropPath);
-                weatherValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_YOUTUBE_KEY, youtubeKey);
+                movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_API_ID, id);
+                movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_TITLE, title);
+                movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_OVERVIEW, overview);
+                movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_POPULARITY, popularity);
+                movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_VOTE_COUNT, vote);
+                movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_RELEASE_DATE, releaseDate);
+                movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_CATEGORY, category);
+                movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_POSTER_PATH, posterPath);
+                movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_BACKDROP_PATH, backdropPath);
 
-                cVVector.add(weatherValues);
+                cVVector.add(movieValues);
             }
 
-            int inserted = 0;
-            // add to database
-            if ( cVVector.size() > 0 ) {
-                ContentValues[] cvArray = new ContentValues[cVVector.size()];
-                cVVector.toArray(cvArray);
-                inserted = getContext().getContentResolver().bulkInsert(MovieContract.MovieEntry.CONTENT_URI, cvArray);
-
-                moviesInsertedNotification(inserted, category);
-            }
+            insertUniqueMovies(cVVector , category);
 
             Log.d(LOG_TAG, "Sync Complete. " + cVVector.size() + " Inserted");
 
@@ -201,89 +191,34 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter
         }
     }
 
-    private String getMovieYoutubeID(String id)
+    private void insertUniqueMovies(Vector<ContentValues> cVVector , String category)
     {
-        HttpURLConnection urlConnection = null;
-        BufferedReader reader = null;
-        StringBuilder buffer = new StringBuilder();
-
-        try {
-            final String MOVIE_BASE_URL =
-                    Constants.MOVIE_URL;
-            final String API_KEY_PARAM = "api_key";
-
-            Uri builtUri = Uri.parse(MOVIE_BASE_URL).buildUpon()
-                    .appendPath(id)
-                    .appendPath(Constants.VIDEO)
-                    .appendQueryParameter(API_KEY_PARAM, BuildConfig.THE_MOVIE_DB_API_KEY)
-                    .build();
-
-            URL url = new URL(builtUri.toString());
-
-            Log.v(LOG_TAG, url.toString());
-
-            urlConnection = (HttpURLConnection) url.openConnection();
-            urlConnection.setRequestMethod("GET");
-            urlConnection.connect();
-
-            InputStream inputStream = urlConnection.getInputStream();
-
-            if (inputStream == null)
-                return null;
-
-            reader = new BufferedReader(new InputStreamReader(inputStream));
-
-            String line;
-
-            while ((line = reader.readLine()) != null)
-                buffer.append(line).append("\n");
-
-            if (buffer.length() == 0)
-                return null;
-
-        } catch (IOException e) {
-            Log.e(LOG_TAG, "Error ", e);
-        }
-        finally
+        Cursor moviesInMoviesTable = getContext().getContentResolver().query(MovieContract.MovieEntry.CONTENT_URI , Constants.MOVIE_COLUMNS , null , null , null);
+        if( moviesInMoviesTable != null)
         {
-            if (urlConnection != null) {
-                urlConnection.disconnect();
-            }
-            if (reader != null) {
-                try {
-                    reader.close();
-                } catch (final IOException e) {
-                    Log.e(LOG_TAG, "Error closing stream", e);
-                }
-            }
+            for (ContentValues value : cVVector)
+                if( movieExistsInTable(moviesInMoviesTable,value.getAsString(MovieContract.MovieEntry.COLUMN_MOVIE_API_ID)))
+                    cVVector.remove(value);
         }
-        return getMovieYouTubeKeyFromJSON(buffer.toString());
+
+        if ( cVVector.size() > 0 ) {
+            ContentValues[] cvArray = new ContentValues[cVVector.size()];
+            cVVector.toArray(cvArray);
+            int inserted = getContext().getContentResolver().bulkInsert(MovieContract.MovieEntry.CONTENT_URI, cvArray);
+
+            moviesInsertedNotification(inserted, category);
+        }
     }
 
-    private String getMovieYouTubeKeyFromJSON(String JSON)
+    private boolean movieExistsInTable(Cursor cursor , String ID)
     {
-        final String OMA_RESULTS = "results";
-        final String OMA_TYPE = "type";
-        final String OMA_KEY = "key";
-        String youtubeKey = "";
+        cursor.moveToFirst();
 
-        try {
-            JSONObject movieVideoJson = new JSONObject(JSON);
-            JSONArray movieVideoArray = movieVideoJson.getJSONArray(OMA_RESULTS);
+        while( cursor.moveToNext() )
+            if(cursor.getString(Constants.MOVIE_API_ID).equals(ID))
+                return true;
 
-            for (int i = 0; i < movieVideoArray.length(); i++)
-            {
-                JSONObject movieObject = movieVideoArray.getJSONObject(i);
-
-                if(movieObject.getString(OMA_TYPE).equals(Constants.TRAILER))
-                    youtubeKey = movieObject.getString(OMA_KEY);
-            }
-        }
-        catch (JSONException e) {
-            Log.e(LOG_TAG, e.getMessage(), e);
-            e.printStackTrace();
-        }
-        return youtubeKey;
+        return false;
     }
 
     private void moviesInsertedNotification(int insertedItems, String category)
