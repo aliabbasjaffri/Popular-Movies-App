@@ -33,5 +33,6 @@
     <string name="placeholder_movie_plot">Twenty-two years after the events of Jurassic Park, Isla Nublar now features a fully functioning dinosaur theme park, Jurassic World, as originally envisioned by John Hammond.
         Twenty-two years after the events of Jurassic Park, Isla Nublar now features a fully functioning dinosaur theme park, Jurassic World, as originally envisioned by John Hammond.
     </string>
+    <string name="title_activity_favorite">FavoriteActivity</string>
 
 </resources>

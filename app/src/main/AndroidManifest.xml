@@ -80,6 +80,16 @@
                 android:name="android.content.SyncAdapter"
                 android:resource="@xml/syncadapter" />
         </service>
+
+        <activity
+            android:name=".activity.FavoriteActivity"
+            android:label="@string/title_activity_favorite"
+            android:parentActivityName=".activity.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.popularmoviesapp.activity.MainActivity" />
+        </activity>
     </application>
 
 </manifest>
