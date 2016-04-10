@@ -1,6 +1,7 @@
 package com.popularmoviesapp.fragment;
 
 import android.content.ContentValues;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -56,7 +57,8 @@ public class DetailActivityFragment extends Fragment  implements LoaderManager.L
 
     Uri mUri;
     String youtubeKey;
-    String movieName;
+    String movieName = "";
+    boolean enableVideo;
 
     public DetailActivityFragment() {
     }
@@ -65,6 +67,8 @@ public class DetailActivityFragment extends Fragment  implements LoaderManager.L
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
         View view = inflater.inflate(R.layout.fragment_detail, container, false);
+
+        enableVideo = false;
 
         Bundle arguments = getArguments();
         if (arguments != null)
@@ -82,7 +86,8 @@ public class DetailActivityFragment extends Fragment  implements LoaderManager.L
         trailerPlayButtonImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                if (enableVideo)
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(Constants.YOU_TUBE_VIDEO_URL + youtubeKey)).putExtra("force_fullscreen", true));
             }
         });
 
@@ -148,8 +153,10 @@ public class DetailActivityFragment extends Fragment  implements LoaderManager.L
 
             if(data.getString(Constants.MOVIE_YOUTUBE_KEY).equals(""))
                 new GetYoutubeKeyAsyncTask().execute(data.getString(Constants.MOVIE_API_ID));
-            else
+            else {
                 youtubeKey = data.getString(Constants.MOVIE_YOUTUBE_KEY);
+                enableVideo = true;
+            }
         }
     }
 
@@ -272,9 +279,11 @@ public class DetailActivityFragment extends Fragment  implements LoaderManager.L
                 ContentValues movieValues = new ContentValues();
                 movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_YOUTUBE_KEY, youtubeKey);
                 getActivity().getContentResolver().update(MovieContract.MovieEntry.CONTENT_URI, movieValues, MovieContract.MovieEntry.COLUMN_MOVIE_API_ID + " = ?", new String[]{movieID});
+                enableVideo = true;
             }
             else
-                Toast.makeText(getActivity(), "No Video URL For " + movieName, Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), "No Video URL For " + ( !movieName.equals("") ? movieName : "movie"), Toast.LENGTH_LONG).show();
+
         }
     }
 }
