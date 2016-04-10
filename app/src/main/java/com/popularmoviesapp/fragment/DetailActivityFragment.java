@@ -332,6 +332,10 @@ public class DetailActivityFragment extends Fragment  implements LoaderManager.L
                 ContentValues movieValues = new ContentValues();
                 movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_LIKED, "1");
                 getActivity().getContentResolver().update(MovieContract.MovieEntry.CONTENT_URI, movieValues, MovieContract.MovieEntry.COLUMN_MOVIE_API_ID + " = ?", new String[]{s});
+                synchronized (getActivity().getContentResolver())
+                {
+                    getActivity().getContentResolver().notifyAll();
+                }
                 favoriteButtonImage.setImageResource(R.drawable.ic_favorite);
                 Toast.makeText(getActivity(), movieName + " added in Favorite List", Toast.LENGTH_SHORT).show();
             }

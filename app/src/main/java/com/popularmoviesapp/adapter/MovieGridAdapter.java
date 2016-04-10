@@ -75,18 +75,12 @@ public class MovieGridAdapter extends CursorAdapter
                 }
         );
 
-        String movieLikedIndicator = cursor.getString(Constants.MOVIE_LIKED);
-        setIconForLiked(viewHolder, movieLikedIndicator);
+        viewHolder.mGridMovieItemLikeImageView.setImageResource(cursor.getString(Constants.MOVIE_LIKED).equals("0") ? R.drawable.ic_favorite_border : R.drawable.ic_favorite);
 
         String movieAverageRating = cursor.getString(Constants.MOVIE_POPULARITY);
         viewHolder.mGridMovieItemAverageRating.setText(movieAverageRating);
 
-        String movieReleaseYear = cursor.getString(Constants.MOVIE_RELEASE_DATE );
+        String movieReleaseYear = cursor.getString(Constants.MOVIE_RELEASE_DATE);
         viewHolder.mGridMovieItemDate.setText(Utility.getYearFromDate(movieReleaseYear));
-    }
-
-    private void  setIconForLiked(GridViewHolder holder, String value) {
-        boolean addedInFavorite = Boolean.parseBoolean(value);
-        holder.mGridMovieItemLikeImageView.setImageResource(addedInFavorite ? R.drawable.ic_favorite : R.drawable.ic_favorite_border);
     }
 }

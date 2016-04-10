@@ -102,6 +102,7 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     public void onResume()
     {
         super.onResume();
+        mMovieGridAdapter.notifyDataSetChanged();
         getLoaderManager().restartLoader(MOVIE_LOADER, null, this);
     }
 
