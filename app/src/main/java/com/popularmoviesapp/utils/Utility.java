@@ -17,9 +17,13 @@ package com.popularmoviesapp.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.preference.PreferenceManager;
 import android.text.format.Time;
 import com.popularmoviesapp.R;
+
+import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
 
 public class Utility {
@@ -59,5 +63,16 @@ public class Utility {
         SimpleDateFormat monthDayFormat = new SimpleDateFormat("MMMM dd");
         String monthDayString = monthDayFormat.format(dateInMillis);
         return monthDayString;
+    }
+
+    public static byte[] getBytesFromBitmap(Bitmap bitmap) {
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 70, stream);
+        return stream.toByteArray();
+    }
+
+    public static Bitmap getImage(byte[] image)
+    {
+        return BitmapFactory.decodeByteArray(image, 0, image.length);
     }
 }

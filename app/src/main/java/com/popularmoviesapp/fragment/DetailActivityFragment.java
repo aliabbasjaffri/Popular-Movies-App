@@ -3,6 +3,7 @@ package com.popularmoviesapp.fragment;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
@@ -10,7 +11,6 @@ import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +23,7 @@ import com.popularmoviesapp.BuildConfig;
 import com.popularmoviesapp.R;
 import com.popularmoviesapp.provider.MovieContract;
 import com.popularmoviesapp.utils.Constants;
+import com.popularmoviesapp.utils.Utility;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
@@ -35,7 +36,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Objects;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -59,6 +59,8 @@ public class DetailActivityFragment extends Fragment  implements LoaderManager.L
     String youtubeKey;
     String movieName = "";
     boolean enableVideo;
+
+    Cursor favoriteCursor = null;
 
     public DetailActivityFragment() {
     }
@@ -95,7 +97,8 @@ public class DetailActivityFragment extends Fragment  implements LoaderManager.L
         favoriteButtonImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO: on click to add in database. Also persist the movie liked field.
+                if (enableVideo)
+                    new CreateFavoriteItem().execute(favoriteCursor);
             }
         });
 
@@ -132,6 +135,8 @@ public class DetailActivityFragment extends Fragment  implements LoaderManager.L
 
         if (data != null && data.moveToFirst())
         {
+            favoriteCursor = data;
+
             Picasso.with(getActivity())
                    .load(Constants.IMAGE_MOVIE_URL + Constants.IMAGE_SIZE_W500 + data.getString(Constants.MOVIE_BACKDROP_PATH))
                    .placeholder(R.drawable.ic_movie_placeholder)
@@ -258,6 +263,30 @@ public class DetailActivityFragment extends Fragment  implements LoaderManager.L
         return youtubeKey;
     }
 
+    private String insertInFavorite(Cursor data)
+    {
+        data.moveToFirst();
+
+        ContentValues movieValues = new ContentValues();
+
+        movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_API_ID, data.getString(Constants.MOVIE_API_ID));
+        movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_TITLE, data.getString(Constants.MOVIE_TITLE));
+        movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_OVERVIEW, data.getString(Constants.MOVIE_OVERVIEW));
+        movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_POPULARITY, data.getString(Constants.MOVIE_POPULARITY));
+        movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_VOTE_COUNT, data.getString(Constants.MOVIE_VOTE_COUNT));
+        movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_RELEASE_DATE, data.getString(Constants.MOVIE_RELEASE_DATE));
+        movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_CATEGORY, data.getString(Constants.MOVIE_CATEGORY));
+        movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_POSTER_PATH, data.getString(Constants.MOVIE_POSTER_PATH));
+        movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_BACKDROP_PATH, data.getString(Constants.MOVIE_BACKDROP_PATH));
+        movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_YOUTUBE_KEY , youtubeKey);
+        movieValues.put(MovieContract.FavouriteEntry.COLUMN_MOVIE_POSTER_IMAGE_BLOB , Utility.getBytesFromBitmap(((BitmapDrawable) posterImage.getDrawable()).getBitmap()));
+        movieValues.put(MovieContract.FavouriteEntry.COLUMN_MOVIE_BACKDROP_IMAGE_BLOB , Utility.getBytesFromBitmap(((BitmapDrawable)backDropImage.getDrawable()).getBitmap()));
+
+        getActivity().getContentResolver().insert(MovieContract.FavouriteEntry.CONTENT_URI , movieValues );
+
+        return data.getString(Constants.MOVIE_API_ID);
+    }
+
     private class GetYoutubeKeyAsyncTask extends AsyncTask<String , Void , String>
     {
         private String movieID;
@@ -284,6 +313,28 @@ public class DetailActivityFragment extends Fragment  implements LoaderManager.L
             else
                 Toast.makeText(getActivity(), "No Video URL For " + ( !movieName.equals("") ? movieName : "movie"), Toast.LENGTH_LONG).show();
 
+        }
+    }
+
+    private class CreateFavoriteItem extends AsyncTask<Cursor , Void , String >
+    {
+        @Override
+        protected String doInBackground(Cursor... params)
+        {
+            return insertInFavorite(params[0]);
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+
+            ContentValues movieValues = new ContentValues();
+            movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_LIKED, "1");
+            getActivity().getContentResolver().update(MovieContract.MovieEntry.CONTENT_URI, movieValues, MovieContract.MovieEntry.COLUMN_MOVIE_API_ID + " = ?", new String[]{s});
+
+            favoriteButtonImage.setImageResource(R.drawable.ic_favorite);
+
+            Toast.makeText(getActivity(), movieName + " Added in Favorite List", Toast.LENGTH_SHORT).show();
         }
     }
 }

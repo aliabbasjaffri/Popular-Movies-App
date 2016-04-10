@@ -68,7 +68,7 @@ public class Constants {
     public static final int MOVIE_POPULARITY = 4;
     public static final int MOVIE_VOTE_COUNT = 5;
     public static final int MOVIE_RELEASE_DATE = 6;
-    public static final int MOVIE_GENRE = 7;
+    public static final int MOVIE_CATEGORY = 7;
     public static final int MOVIE_POSTER_PATH = 8;
     public static final int MOVIE_BACKDROP_PATH = 9;
     public static final int MOVIE_LIKED = 10;
