@@ -40,7 +40,7 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
         gridView = (GridView)view.findViewById(R.id.mainMoviesGrid);
-        mMovieGridAdapter = new MovieGridAdapter(getActivity() , null , 0);
+        mMovieGridAdapter = new MovieGridAdapter(getActivity() , null , 0 , false);
         gridView.setAdapter(mMovieGridAdapter);
 
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {

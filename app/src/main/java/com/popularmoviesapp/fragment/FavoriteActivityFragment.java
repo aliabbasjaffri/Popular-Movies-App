@@ -43,7 +43,7 @@ public class FavoriteActivityFragment extends Fragment implements LoaderManager.
         View view = inflater.inflate(R.layout.fragment_favorite, container, false);
 
         gridView = (GridView)view.findViewById(R.id.favoriteMoviesGrid);
-        mMovieGridAdapter = new MovieGridAdapter(getActivity() , null , 0);
+        mMovieGridAdapter = new MovieGridAdapter(getActivity() , null , 0 , true);
         gridView.setAdapter(mMovieGridAdapter);
 
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {

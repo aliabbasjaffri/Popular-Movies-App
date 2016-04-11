@@ -5,7 +5,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.ColorUtils;
 import android.support.v7.graphics.Palette;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import com.popularmoviesapp.R;
@@ -13,9 +12,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.view.LayoutInflater;
 import android.widget.CursorAdapter;
-import android.widget.LinearLayout;
 
-import com.popularmoviesapp.fragment.MainActivityFragment;
 import com.popularmoviesapp.helper.GridViewHolder;
 import com.popularmoviesapp.utils.Constants;
 import com.popularmoviesapp.utils.Utility;
@@ -28,10 +25,12 @@ import com.squareup.picasso.Picasso;
 public class MovieGridAdapter extends CursorAdapter
 {
     Context context;
+    boolean favAdapter;
 
-    public MovieGridAdapter(Context context, Cursor c, int flags) {
+    public MovieGridAdapter(Context context, Cursor c, int flags , boolean mainOrFavorite) {
         super(context, c, flags);
         this.context = context;
+        this.favAdapter = mainOrFavorite;
     }
 
     @Override
@@ -49,38 +48,61 @@ public class MovieGridAdapter extends CursorAdapter
     public void bindView(View view, Context context, Cursor cursor)
     {
         final GridViewHolder viewHolder = (GridViewHolder) view.getTag();
-        String moviePosterPath = cursor.getString(Constants.MOVIE_POSTER_PATH);
 
-        final int colorPrimaryLight = ContextCompat.getColor(context, (R.color.colorPrimaryTransparent));
-        String imageUrl = Constants.IMAGE_MOVIE_URL + Constants.IMAGE_SIZE_W185 + moviePosterPath;
-        Picasso.with(viewHolder.mGridMovieItemImageView.getContext())
-                .load(imageUrl)
-                .placeholder(R.drawable.ic_movie_placeholder)
-                .into(viewHolder.mGridMovieItemImageView, new Callback()
-                {
-                    @Override
-                    public void onSuccess() {
-                        Bitmap posterBitmap = ((BitmapDrawable) viewHolder.mGridMovieItemImageView.getDrawable()).getBitmap();
-                        Palette.from(posterBitmap).generate(new Palette.PaletteAsyncListener() {
-                            @Override
-                            public void onGenerated(Palette palette) {
-                                viewHolder.mGridMovieItemTitleContainer.setBackgroundColor(ColorUtils.setAlphaComponent(palette.getMutedColor(colorPrimaryLight), 190)); //Opacity
+        if(!favAdapter) {
+            String moviePosterPath = cursor.getString(Constants.MOVIE_POSTER_PATH);
+
+            final int colorPrimaryLight = ContextCompat.getColor(context, (R.color.colorPrimaryTransparent));
+            String imageUrl = Constants.IMAGE_MOVIE_URL + Constants.IMAGE_SIZE_W185 + moviePosterPath;
+            Picasso.with(viewHolder.mGridMovieItemImageView.getContext())
+                    .load(imageUrl)
+                    .placeholder(R.drawable.ic_movie_placeholder)
+                    .into(viewHolder.mGridMovieItemImageView, new Callback() {
+                                @Override
+                                public void onSuccess() {
+                                    Bitmap posterBitmap = ((BitmapDrawable) viewHolder.mGridMovieItemImageView.getDrawable()).getBitmap();
+                                    Palette.from(posterBitmap).generate(new Palette.PaletteAsyncListener() {
+                                        @Override
+                                        public void onGenerated(Palette palette) {
+                                            viewHolder.mGridMovieItemTitleContainer.setBackgroundColor(ColorUtils.setAlphaComponent(palette.getMutedColor(colorPrimaryLight), 190)); //Opacity
+                                        }
+                                    });
+                                }
+
+                                @Override
+                                public void onError() {
+                                }
                             }
-                        });
-                    }
+                    );
 
-                    @Override
-                    public void onError() {
-                    }
+            viewHolder.mGridMovieItemLikeImageView.setImageResource(cursor.getString(Constants.MOVIE_LIKED).equals("0") ? R.drawable.ic_favorite_border : R.drawable.ic_favorite);
+
+            String movieAverageRating = cursor.getString(Constants.MOVIE_POPULARITY);
+            viewHolder.mGridMovieItemAverageRating.setText(movieAverageRating);
+
+            String movieReleaseYear = cursor.getString(Constants.MOVIE_RELEASE_DATE);
+            viewHolder.mGridMovieItemDate.setText(Utility.getYearFromDate(movieReleaseYear));
+        }
+        else
+        {
+            viewHolder.mGridMovieItemImageView.setImageBitmap(Utility.getImage(cursor.getBlob(Constants.FAVORITE_MOVIE_POSTER_IMAGE_BLOB)));
+
+            final int colorPrimaryLight = ContextCompat.getColor(context, (R.color.colorPrimaryTransparent));
+            Bitmap posterBitmap = ((BitmapDrawable) viewHolder.mGridMovieItemImageView.getDrawable()).getBitmap();
+            Palette.from(posterBitmap).generate(new Palette.PaletteAsyncListener() {
+                @Override
+                public void onGenerated(Palette palette) {
+                    viewHolder.mGridMovieItemTitleContainer.setBackgroundColor(ColorUtils.setAlphaComponent(palette.getMutedColor(colorPrimaryLight), 190));
                 }
-        );
+            });
 
-        viewHolder.mGridMovieItemLikeImageView.setImageResource(cursor.getString(Constants.MOVIE_LIKED).equals("0") ? R.drawable.ic_favorite_border : R.drawable.ic_favorite);
+            viewHolder.mGridMovieItemLikeImageView.setImageResource(R.drawable.ic_favorite);
 
-        String movieAverageRating = cursor.getString(Constants.MOVIE_POPULARITY);
-        viewHolder.mGridMovieItemAverageRating.setText(movieAverageRating);
+            String movieAverageRating = cursor.getString(Constants.FAVORITE_MOVIE_POPULARITY);
+            viewHolder.mGridMovieItemAverageRating.setText(movieAverageRating);
 
-        String movieReleaseYear = cursor.getString(Constants.MOVIE_RELEASE_DATE);
-        viewHolder.mGridMovieItemDate.setText(Utility.getYearFromDate(movieReleaseYear));
+            String movieReleaseYear = cursor.getString(Constants.FAVORITE_MOVIE_RELEASE_DATE);
+            viewHolder.mGridMovieItemDate.setText(Utility.getYearFromDate(movieReleaseYear));
+        }
     }
 }
