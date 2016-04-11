@@ -7,6 +7,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import com.popularmoviesapp.R;
 import com.popularmoviesapp.fragment.DetailActivityFragment;
+import com.popularmoviesapp.fragment.FavoriteActivityFragment;
 import com.popularmoviesapp.fragment.MainActivityFragment;
 import com.popularmoviesapp.provider.MovieContract;
 import com.popularmoviesapp.sync.MoviesSyncAdapter;
@@ -71,6 +72,10 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             startActivity(new Intent( this , SettingsActivity.class));
+            return true;
+        }
+        else if (id == R.id.action_favorites) {
+            startActivity(new Intent( this , FavoriteActivity.class));
             return true;
         }
 
