@@ -53,7 +53,7 @@ public class FavoriteActivityFragment extends Fragment implements LoaderManager.
                 mPosition = position;
                 if (cursor != null) {
                     ((FavoriteMovieCallback) getActivity())
-                            .onMovieItemSelected(MovieContract.FavouriteEntry.buildFavouriteUri(cursor.getLong(Constants.MOVIE_ID)));
+                            .onMovieItemSelected(MovieContract.FavouriteEntry.buildFavouriteUri(cursor.getLong(Constants.FAVORITE_MOVIE_ID)));
                 }
             }
         });
