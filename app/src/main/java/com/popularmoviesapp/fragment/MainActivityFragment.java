@@ -31,7 +31,6 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     public static final String LOG_TAG = MainActivityFragment.class.getSimpleName();
 
     GridView gridView = null;
-    private SharedPreferences sharedPref = null;
     public MovieGridAdapter mMovieGridAdapter = null;
     int mPosition = GridView.INVALID_POSITION;
     static final String SELECTED_KEY = "selectedPosition";
