@@ -43,7 +43,10 @@ import java.net.URL;
 public class DetailActivityFragment extends Fragment  implements LoaderManager.LoaderCallbacks<Cursor>
 {
     private static final int DETAIL_LOADER = 0;
+
     public static final String DETAIL_URI = "URI";
+    public static final String ACTIVITY_FRAGMENT_SELECTOR = "ACTIVITY_FRAGMENT_SELECTOR";
+
     private static final String LOG_TAG = DetailActivityFragment.class.getSimpleName();
 
     ImageView backDropImage;
@@ -56,6 +59,8 @@ public class DetailActivityFragment extends Fragment  implements LoaderManager.L
     TextView movieOverview;
 
     Uri mUri;
+    boolean mainAcitivtyFragment;
+
     String youtubeKey;
     String movieAPIID = "";
     String movieName = "";
@@ -74,8 +79,11 @@ public class DetailActivityFragment extends Fragment  implements LoaderManager.L
         enableVideo = false;
 
         Bundle arguments = getArguments();
-        if (arguments != null)
+
+        if (arguments != null) {
             mUri = arguments.getParcelable(DetailActivityFragment.DETAIL_URI);
+            mainAcitivtyFragment = arguments.getBoolean(DetailActivityFragment.ACTIVITY_FRAGMENT_SELECTOR);
+        }
 
         backDropImage = (ImageView) view.findViewById(R.id.fragmentDetailsMovieBackDropImage);
         posterImage = (ImageView) view.findViewById(R.id.fragmentDetailsMoviePosterImage);
@@ -98,8 +106,10 @@ public class DetailActivityFragment extends Fragment  implements LoaderManager.L
         favoriteButtonImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (enableVideo)
+                if (enableVideo && mainAcitivtyFragment)
                     new CreateFavoriteItem().execute(favoriteCursor);
+                //else if (enableVideo && !mainAcitivtyFragment)
+                //    new CreateFavoriteItem().execute(favoriteCursor);
             }
         });
         return view;
@@ -117,14 +127,27 @@ public class DetailActivityFragment extends Fragment  implements LoaderManager.L
     {
         if( null != mUri )
         {
-            return new CursorLoader(
-                    getActivity(),
-                    mUri,
-                    Constants.MOVIE_COLUMNS,
-                    null,
-                    null,
-                    null
-            );
+            if(mainAcitivtyFragment) {
+                return new CursorLoader(
+                        getActivity(),
+                        mUri,
+                        Constants.MOVIE_COLUMNS,
+                        null,
+                        null,
+                        null
+                );
+            }
+            else
+            {
+                return new CursorLoader(
+                        getActivity(),
+                        mUri,
+                        Constants.FAVORITE_MOVIE_COLUMNS,
+                        null,
+                        null,
+                        null
+                );
+            }
         }
         return null;
     }
@@ -134,32 +157,46 @@ public class DetailActivityFragment extends Fragment  implements LoaderManager.L
     {
         if (data != null && data.moveToFirst())
         {
-            favoriteCursor = data;
+            if(mainAcitivtyFragment) {
+                favoriteCursor = data;
 
-            Picasso.with(getActivity())
-                   .load(Constants.IMAGE_MOVIE_URL + Constants.IMAGE_SIZE_W500 + data.getString(Constants.MOVIE_BACKDROP_PATH))
-                   .placeholder(R.drawable.ic_movie_placeholder)
-                   .error(R.drawable.ic_movie_placeholder)
-                   .into(backDropImage);
+                Picasso.with(getActivity())
+                        .load(Constants.IMAGE_MOVIE_URL + Constants.IMAGE_SIZE_W500 + data.getString(Constants.MOVIE_BACKDROP_PATH))
+                        .placeholder(R.drawable.ic_movie_placeholder)
+                        .error(R.drawable.ic_movie_placeholder)
+                        .into(backDropImage);
 
-            Picasso.with(getActivity())
-                    .load(Constants.IMAGE_MOVIE_URL + Constants.IMAGE_SIZE_W185 + data.getString(Constants.MOVIE_POSTER_PATH))
-                    .placeholder(R.drawable.ic_movie_placeholder)
-                    .error(R.drawable.ic_movie_placeholder)
-                    .into(posterImage);
+                Picasso.with(getActivity())
+                        .load(Constants.IMAGE_MOVIE_URL + Constants.IMAGE_SIZE_W185 + data.getString(Constants.MOVIE_POSTER_PATH))
+                        .placeholder(R.drawable.ic_movie_placeholder)
+                        .error(R.drawable.ic_movie_placeholder)
+                        .into(posterImage);
 
-            favoriteButtonImage.setImageResource(data.getString(Constants.MOVIE_LIKED).equals("0") ? R.drawable.ic_favorite_border : R.drawable.ic_favorite);
+                favoriteButtonImage.setImageResource(data.getString(Constants.MOVIE_LIKED).equals("0") ? R.drawable.ic_favorite_border : R.drawable.ic_favorite);
 
-            movieTitle.setText(movieName = data.getString(Constants.MOVIE_TITLE));
-            movieReleaseDate.setText(data.getString(Constants.MOVIE_RELEASE_DATE));
-            movieRating.setText(data.getString(Constants.MOVIE_POPULARITY));
-            movieOverview.setText(data.getString(Constants.MOVIE_OVERVIEW));
-            movieAPIID = data.getString(Constants.MOVIE_API_ID);
+                movieTitle.setText(movieName = data.getString(Constants.MOVIE_TITLE));
+                movieReleaseDate.setText(data.getString(Constants.MOVIE_RELEASE_DATE));
+                movieRating.setText(data.getString(Constants.MOVIE_POPULARITY));
+                movieOverview.setText(data.getString(Constants.MOVIE_OVERVIEW));
+                movieAPIID = data.getString(Constants.MOVIE_API_ID);
 
-            if(data.getString(Constants.MOVIE_YOUTUBE_KEY).equals(""))
-                new GetYoutubeKeyAsyncTask().execute(movieAPIID);
-            else {
-                youtubeKey = data.getString(Constants.MOVIE_YOUTUBE_KEY);
+                if (data.getString(Constants.MOVIE_YOUTUBE_KEY).equals(""))
+                    new GetYoutubeKeyAsyncTask().execute(movieAPIID);
+                else {
+                    youtubeKey = data.getString(Constants.MOVIE_YOUTUBE_KEY);
+                    enableVideo = true;
+                }
+            }
+            else
+            {
+                backDropImage.setImageBitmap(Utility.getImage(data.getBlob(Constants.FAVORITE_MOVIE_BACKDROP_IMAGE_BLOB)));
+                posterImage.setImageBitmap(Utility.getImage(data.getBlob(Constants.FAVORITE_MOVIE_POSTER_IMAGE_BLOB)));
+                favoriteButtonImage.setImageResource(R.drawable.ic_favorite);
+                movieTitle.setText(movieName = data.getString(Constants.FAVORITE_MOVIE_TITLE));
+                movieReleaseDate.setText(data.getString(Constants.FAVORITE_MOVIE_RELEASE_DATE));
+                movieRating.setText(data.getString(Constants.FAVORITE_MOVIE_POPULARITY));
+                movieOverview.setText(data.getString(Constants.FAVORITE_MOVIE_OVERVIEW));
+                movieAPIID = data.getString(Constants.FAVORITE_MOVIE_API_ID);
                 enableVideo = true;
             }
         }
@@ -270,6 +307,7 @@ public class DetailActivityFragment extends Fragment  implements LoaderManager.L
          if( cursor == null || cursor.getCount() == 0  )
          {
              ContentValues movieValues = new ContentValues();
+
              movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_API_ID, data.getString(Constants.MOVIE_API_ID));
              movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_TITLE, data.getString(Constants.MOVIE_TITLE));
              movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_OVERVIEW, data.getString(Constants.MOVIE_OVERVIEW));
@@ -282,6 +320,7 @@ public class DetailActivityFragment extends Fragment  implements LoaderManager.L
              movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_YOUTUBE_KEY, youtubeKey);
              movieValues.put(MovieContract.FavouriteEntry.COLUMN_MOVIE_POSTER_IMAGE_BLOB, Utility.getBytesFromBitmap(((BitmapDrawable) posterImage.getDrawable()).getBitmap()));
              movieValues.put(MovieContract.FavouriteEntry.COLUMN_MOVIE_BACKDROP_IMAGE_BLOB, Utility.getBytesFromBitmap(((BitmapDrawable) backDropImage.getDrawable()).getBitmap()));
+
              getActivity().getContentResolver().insert(MovieContract.FavouriteEntry.CONTENT_URI, movieValues);
              return movieAPIID;
          }

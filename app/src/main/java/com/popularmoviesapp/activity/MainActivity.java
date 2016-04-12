@@ -3,21 +3,21 @@ package com.popularmoviesapp.activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import com.popularmoviesapp.R;
-import com.popularmoviesapp.fragment.DetailActivityFragment;
-import com.popularmoviesapp.fragment.FavoriteActivityFragment;
-import com.popularmoviesapp.fragment.MainActivityFragment;
-import com.popularmoviesapp.provider.MovieContract;
-import com.popularmoviesapp.sync.MoviesSyncAdapter;
 import com.popularmoviesapp.utils.Utility;
-
 import android.support.v7.app.AppCompatActivity;
-import android.widget.Toast;
+import com.popularmoviesapp.sync.MoviesSyncAdapter;
+import com.popularmoviesapp.fragment.MainActivityFragment;
+import com.popularmoviesapp.fragment.DetailActivityFragment;
 
 public class MainActivity extends AppCompatActivity implements MainActivityFragment.MovieCallback
 {
+    private boolean mainActivity;       //Distinguishes whether main activity of favorite activity; True for main, false for favorite
+    private String movieName;           //TODO: get movie name and populate it for the actionbar
+
     private static final String DETAILFRAGMENT_TAG = "DFTAG";
     private boolean mTwoPane;
     String mCategory;
@@ -28,38 +28,59 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
         mCategory = Utility.getPreferredCategory(this);
         setContentView(R.layout.activity_main);
 
-        getSupportActionBar().setDisplayUseLogoEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setIcon(R.drawable.ic_logo);
-        getSupportActionBar().setTitle("");
+        mainActivity = true;
+        MainActivityFragment.mainActivityFragment = true;
+
+        Intent intent = getIntent();
+        if(intent != null)
+        {
+            mainActivity = MainActivityFragment.mainActivityFragment =intent.getBooleanExtra("ActivitySelector", true);
+        }
+
+        if (mainActivity) {
+            getSupportActionBar().setDisplayUseLogoEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+            getSupportActionBar().setIcon(R.drawable.ic_logo);
+            getSupportActionBar().setTitle("");
+        }
+        else {
+            getSupportActionBar().setHomeButtonEnabled(true);
+            getSupportActionBar().setDisplayUseLogoEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+            getSupportActionBar().setTitle("Favorite Movies");
+        }
 
         if (findViewById(R.id.movie_detail_container) != null)
         {
-            // The detail container view will be present only in the large-screen layouts
-            // (res/layout-sw600dp). If this view is present, then the activity should be
-            // in two-pane mode.
             mTwoPane = true;
-            // In two-pane mode, show the detail view in this activity by
-            // adding or replacing the detail fragment using a
-            // fragment transaction.
             if (savedInstanceState == null)
             {
+                Bundle bundle = new Bundle();
+                bundle.putBoolean(DetailActivityFragment.ACTIVITY_FRAGMENT_SELECTOR, mainActivity);
+
+                DetailActivityFragment fragment = new DetailActivityFragment();
+                fragment.setArguments(bundle);
+
                 getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.movie_detail_container, new DetailActivityFragment(), DETAILFRAGMENT_TAG)
+                        .replace(R.id.movie_detail_container, fragment , DETAILFRAGMENT_TAG)
                         .commit();
             }
         }
         else
             mTwoPane = false;
 
-        MoviesSyncAdapter.initializeSyncAdapter(this);
+        if(mainActivity)
+            MoviesSyncAdapter.initializeSyncAdapter(this);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu, menu);
-        return true;
+        if(mainActivity) {
+            getMenuInflater().inflate(R.menu.menu, menu);
+            return true;
+        }
+        else return false;
     }
 
     @Override
@@ -67,19 +88,21 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+        if(mainActivity) {
+            int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            startActivity(new Intent( this , SettingsActivity.class));
-            return true;
-        }
-        else if (id == R.id.action_favorites) {
-            startActivity(new Intent( this , FavoriteActivity.class));
-            return true;
-        }
+            //noinspection SimplifiableIfStatement
+            if (id == R.id.action_settings) {
+                startActivity(new Intent(this, SettingsActivity.class));
+                return true;
+            } else if (id == R.id.action_favorites) {
+                startActivity(new Intent(this, MainActivity.class).putExtra("ActivitySelector", !mainActivity));
+                return true;
+            }
 
-        return super.onOptionsItemSelected(item);
+            return super.onOptionsItemSelected(item);
+        }
+        else return false;
     }
 
     @Override
@@ -89,6 +112,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
         {
             Bundle args = new Bundle();
             args.putParcelable(DetailActivityFragment.DETAIL_URI, dataUri);
+            args.putBoolean(DetailActivityFragment.ACTIVITY_FRAGMENT_SELECTOR, mainActivity);
 
             DetailActivityFragment fragment = new DetailActivityFragment();
             fragment.setArguments(args);
@@ -96,7 +120,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
             getSupportFragmentManager().beginTransaction().replace(R.id.movie_detail_container, fragment, DETAILFRAGMENT_TAG).commit();
         }
         else
-            startActivity(new Intent(this, DetailActivity.class).setData(dataUri));
+            startActivity(new Intent(this, DetailActivity.class).setData(dataUri).putExtra(DetailActivityFragment.ACTIVITY_FRAGMENT_SELECTOR , mainActivity));
     }
 
     @Override

@@ -21,6 +21,8 @@ public class DetailActivity extends AppCompatActivity {
 
         Bundle arguments = new Bundle();
         arguments.putParcelable(DetailActivityFragment.DETAIL_URI, getIntent().getData());
+        arguments.putBoolean(DetailActivityFragment.ACTIVITY_FRAGMENT_SELECTOR, getIntent().getBooleanExtra(DetailActivityFragment.ACTIVITY_FRAGMENT_SELECTOR , true));
+
         DetailActivityFragment detailFragment = new DetailActivityFragment();
         detailFragment.setArguments(arguments);
 

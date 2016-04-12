@@ -25,12 +25,12 @@ import com.squareup.picasso.Picasso;
 public class MovieGridAdapter extends CursorAdapter
 {
     Context context;
-    boolean favAdapter;
+    boolean mainAdapter;
 
-    public MovieGridAdapter(Context context, Cursor c, int flags , boolean mainOrFavorite) {
+    public MovieGridAdapter(Context context, Cursor c, int flags , boolean mainOrFavorite) {        //Distinguishes between Main Activity and Favorite activity: True for main, false for favorite
         super(context, c, flags);
         this.context = context;
-        this.favAdapter = mainOrFavorite;
+        this.mainAdapter = mainOrFavorite;
     }
 
     @Override
@@ -49,7 +49,7 @@ public class MovieGridAdapter extends CursorAdapter
     {
         final GridViewHolder viewHolder = (GridViewHolder) view.getTag();
 
-        if(!favAdapter) {
+        if(mainAdapter) {
             String moviePosterPath = cursor.getString(Constants.MOVIE_POSTER_PATH);
 
             final int colorPrimaryLight = ContextCompat.getColor(context, (R.color.colorPrimaryTransparent));

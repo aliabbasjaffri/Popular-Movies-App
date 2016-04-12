@@ -27,6 +27,7 @@ import com.popularmoviesapp.utils.Utility;
  */
 public class MainActivityFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>
 {
+    public static boolean mainActivityFragment;
     private static final int MOVIE_LOADER = 0;
     public static final String LOG_TAG = MainActivityFragment.class.getSimpleName();
 
@@ -40,7 +41,7 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
         gridView = (GridView)view.findViewById(R.id.mainMoviesGrid);
-        mMovieGridAdapter = new MovieGridAdapter(getActivity() , null , 0 , false);
+        mMovieGridAdapter = new MovieGridAdapter(getActivity() , null , 0 , true);
         gridView.setAdapter(mMovieGridAdapter);
 
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -48,9 +49,12 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
             public void onItemClick(AdapterView adapterView, View view, int position, long l) {
                 Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
                 mPosition = position;
-                if (cursor != null) {
-                    ((MovieCallback) getActivity())
-                            .onMovieItemSelected(MovieContract.MovieEntry.buildMovieUri(cursor.getLong(Constants.MOVIE_ID)));
+                if (cursor != null)
+                {
+                    if(mainActivityFragment)
+                        ((MovieCallback) getActivity()).onMovieItemSelected(MovieContract.MovieEntry.buildMovieUri(cursor.getLong(Constants.MOVIE_ID)));
+                    else
+                        ((MovieCallback) getActivity()).onMovieItemSelected(MovieContract.FavouriteEntry.buildFavouriteUri(cursor.getLong(Constants.FAVORITE_MOVIE_ID)));
                 }
             }
         });
@@ -69,11 +73,25 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     }
 
     @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        String sortOrder = MovieContract.MovieEntry.COLUMN_MOVIE_POPULARITY + " ASC";
-        Uri movieUri = MovieContract.MovieEntry.CONTENT_URI;
-        return new CursorLoader(getActivity(), movieUri, Constants.MOVIE_COLUMNS , MovieContract.MovieEntry.COLUMN_MOVIE_CATEGORY + " = ?" ,
-                new String [] {Utility.getPreferredCategory(getActivity())}, sortOrder);
+    public Loader<Cursor> onCreateLoader(int id, Bundle args)
+    {
+        if(mainActivityFragment) {
+            return new CursorLoader(getActivity(),
+                    MovieContract.MovieEntry.CONTENT_URI,
+                    Constants.MOVIE_COLUMNS,
+                    MovieContract.MovieEntry.COLUMN_MOVIE_CATEGORY + " = ?",
+                    new String[]{Utility.getPreferredCategory(getActivity())},
+                    MovieContract.MovieEntry.COLUMN_MOVIE_POPULARITY + " ASC");
+        }
+        else
+        {
+            return new CursorLoader(getActivity(),
+                    MovieContract.FavouriteEntry.CONTENT_URI,
+                    Constants.FAVORITE_MOVIE_COLUMNS,
+                    null,
+                    null,
+                    MovieContract.FavouriteEntry.COLUMN_MOVIE_POPULARITY + " ASC");
+        }
     }
 
     @Override
@@ -92,7 +110,9 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 
     public void onCategoryChanged()
     {
-        MoviesSyncAdapter.syncImmediately(getActivity());
+        if(mainActivityFragment)
+            MoviesSyncAdapter.syncImmediately(getActivity());
+
         mMovieGridAdapter.notifyDataSetChanged();
         getLoaderManager().restartLoader(MOVIE_LOADER, null, this);
     }
