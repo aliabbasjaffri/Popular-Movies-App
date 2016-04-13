@@ -41,7 +41,9 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
             getSupportActionBar().setTitle("");
         }
         else {
-            getSupportActionBar().setTitle("Favorite Movies");
+            getSupportActionBar().setDisplayUseLogoEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+            getSupportActionBar().setTitle(" Favorite Movies");
         }
 
         if (findViewById(R.id.movie_detail_container) != null)

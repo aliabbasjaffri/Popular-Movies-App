@@ -114,8 +114,6 @@ public class DetailActivityFragment extends Fragment  implements LoaderManager.L
             public void onClick(View v) {
                 if (enableVideo && mainAcitivtyFragment)
                     createFavoriteItem.execute(favoriteCursor);
-                //else if (enableVideo && !mainAcitivtyFragment)
-                //    new CreateFavoriteItem().execute(favoriteCursor);
             }
         });
         return view;
