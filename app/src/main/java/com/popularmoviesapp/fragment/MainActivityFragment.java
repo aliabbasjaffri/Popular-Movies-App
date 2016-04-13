@@ -1,5 +1,6 @@
 package com.popularmoviesapp.fragment;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
@@ -27,8 +28,9 @@ import com.popularmoviesapp.utils.Utility;
  */
 public class MainActivityFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>
 {
-    public static boolean mainActivityFragment;
-    private static final int MOVIE_LOADER = 0;
+    private boolean mainActivityFragment;
+    private static final int GENERAL_MOVIE_LOADER = 0;
+    private static final int FAVORITE_MOVIE_LOADER = 1;
     public static final String LOG_TAG = MainActivityFragment.class.getSimpleName();
 
     GridView gridView = null;
@@ -43,6 +45,8 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
         gridView = (GridView)view.findViewById(R.id.mainMoviesGrid);
         mMovieGridAdapter = new MovieGridAdapter(getActivity() , null , 0 , true);
         gridView.setAdapter(mMovieGridAdapter);
+
+        mainActivityFragment = getActivity().getIntent().getBooleanExtra( "ActivitySelector" , true);
 
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -68,7 +72,10 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     @Override
     public void onActivityCreated(Bundle savedInstanceState)
     {
-        getLoaderManager().initLoader(MOVIE_LOADER, null, this);
+        if(mainActivityFragment)
+            getLoaderManager().initLoader(GENERAL_MOVIE_LOADER, null, this);
+        else
+            getLoaderManager().initLoader(FAVORITE_MOVIE_LOADER, null, this);
         super.onActivityCreated(savedInstanceState);
     }
 
@@ -110,11 +117,9 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 
     public void onCategoryChanged()
     {
-        if(mainActivityFragment)
-            MoviesSyncAdapter.syncImmediately(getActivity());
-
+        MoviesSyncAdapter.syncImmediately(getActivity());
         mMovieGridAdapter.notifyDataSetChanged();
-        getLoaderManager().restartLoader(MOVIE_LOADER, null, this);
+        getLoaderManager().restartLoader(GENERAL_MOVIE_LOADER, null, this);
     }
 
     @Override
@@ -122,7 +127,9 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     {
         super.onResume();
         mMovieGridAdapter.notifyDataSetChanged();
-        getLoaderManager().restartLoader(MOVIE_LOADER, null, this);
+
+        if(mainActivityFragment)
+            getLoaderManager().restartLoader(GENERAL_MOVIE_LOADER, null, this);
     }
 
     @Override

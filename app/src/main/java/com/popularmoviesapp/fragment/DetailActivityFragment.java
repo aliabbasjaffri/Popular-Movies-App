@@ -68,6 +68,9 @@ public class DetailActivityFragment extends Fragment  implements LoaderManager.L
 
     Cursor favoriteCursor = null;
 
+    GetYoutubeKeyAsyncTask getYoutubeKeyAsyncTask;
+    CreateFavoriteItem createFavoriteItem;
+
     public DetailActivityFragment() {
     }
 
@@ -94,6 +97,9 @@ public class DetailActivityFragment extends Fragment  implements LoaderManager.L
         movieRating = (TextView) view.findViewById(R.id.fragmentDetailsMovieRatingText);
         movieOverview = (TextView) view.findViewById(R.id.fragmentDetailsMovieOverviewText);
 
+        getYoutubeKeyAsyncTask = new GetYoutubeKeyAsyncTask();
+        createFavoriteItem = new CreateFavoriteItem();
+
         trailerPlayButtonImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -107,7 +113,7 @@ public class DetailActivityFragment extends Fragment  implements LoaderManager.L
             @Override
             public void onClick(View v) {
                 if (enableVideo && mainAcitivtyFragment)
-                    new CreateFavoriteItem().execute(favoriteCursor);
+                    createFavoriteItem.execute(favoriteCursor);
                 //else if (enableVideo && !mainAcitivtyFragment)
                 //    new CreateFavoriteItem().execute(favoriteCursor);
             }
@@ -181,7 +187,7 @@ public class DetailActivityFragment extends Fragment  implements LoaderManager.L
                 movieAPIID = data.getString(Constants.MOVIE_API_ID);
 
                 if (data.getString(Constants.MOVIE_YOUTUBE_KEY).equals(""))
-                    new GetYoutubeKeyAsyncTask().execute(movieAPIID);
+                    getYoutubeKeyAsyncTask.execute(movieAPIID);
                 else {
                     youtubeKey = data.getString(Constants.MOVIE_YOUTUBE_KEY);
                     enableVideo = true;
@@ -199,12 +205,21 @@ public class DetailActivityFragment extends Fragment  implements LoaderManager.L
                 movieAPIID = data.getString(Constants.FAVORITE_MOVIE_API_ID);
                 enableVideo = true;
             }
+
         }
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
 
+    }
+
+    @Override
+    public void onStop()
+    {
+        super.onStop();
+        getYoutubeKeyAsyncTask.cancel(false);
+        createFavoriteItem.cancel(false);
     }
 
     private String getMovieYoutubeID(String id)

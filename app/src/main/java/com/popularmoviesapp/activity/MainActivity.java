@@ -16,7 +16,7 @@ import com.popularmoviesapp.fragment.DetailActivityFragment;
 public class MainActivity extends AppCompatActivity implements MainActivityFragment.MovieCallback
 {
     private boolean mainActivity;       //Distinguishes whether main activity of favorite activity; True for main, false for favorite
-    private String movieName;           //TODO: get movie name and populate it for the actionbar
+    private String movieName;
 
     private static final String DETAILFRAGMENT_TAG = "DFTAG";
     private boolean mTwoPane;
@@ -28,13 +28,10 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
         mCategory = Utility.getPreferredCategory(this);
         setContentView(R.layout.activity_main);
 
-        mainActivity = true;
-        MainActivityFragment.mainActivityFragment = true;
-
         Intent intent = getIntent();
         if(intent != null)
         {
-            mainActivity = MainActivityFragment.mainActivityFragment =intent.getBooleanExtra("ActivitySelector", true);
+            mainActivity = intent.getBooleanExtra("ActivitySelector", true);
         }
 
         if (mainActivity) {
@@ -44,9 +41,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
             getSupportActionBar().setTitle("");
         }
         else {
-            getSupportActionBar().setHomeButtonEnabled(true);
-            getSupportActionBar().setDisplayUseLogoEnabled(true);
-            getSupportActionBar().setDisplayShowHomeEnabled(true);
             getSupportActionBar().setTitle("Favorite Movies");
         }
 
@@ -85,18 +79,14 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         if(mainActivity) {
             int id = item.getItemId();
 
-            //noinspection SimplifiableIfStatement
             if (id == R.id.action_settings) {
                 startActivity(new Intent(this, SettingsActivity.class));
                 return true;
             } else if (id == R.id.action_favorites) {
-                startActivity(new Intent(this, MainActivity.class).putExtra("ActivitySelector", !mainActivity));
+                startActivity(new Intent(this, MainActivity.class).putExtra("ActivitySelector", !mainActivity).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
                 return true;
             }
 
