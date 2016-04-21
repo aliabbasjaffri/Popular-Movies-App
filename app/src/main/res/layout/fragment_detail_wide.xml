@@ -1,6 +1,120 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="fill_parent"
+    android:layout_width="match_parent">
 
-</LinearLayout>
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clipChildren="false">
+
+        <FrameLayout
+            android:id="@+id/fragmentDetailsImageBackDropContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/fragmentDetailsMovieBackDropImage"
+                android:src="@drawable/placeholder_movie_details_image"
+                android:layout_width="match_parent"
+                android:scaleType="fitCenter"
+                android:adjustViewBounds="true"
+                android:layout_height="wrap_content" />
+
+            <ImageView
+                android:id="@+id/fragmentDetailsMovieTrailerPlayButton"
+                android:src="@drawable/ic_video_play_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"/>
+
+        </FrameLayout>
+
+        <View
+            android:id="@+id/divider1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/fragmentDetailsImageBackDropContainer"
+            android:layout_alignBottom="@+id/fragmentDetailsImageBackDropContainer"/>
+
+        <LinearLayout
+            android:id="@+id/fragmentDetailsMovieDetailsContainer"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/divider1">
+
+            <ImageView
+                android:id="@+id/fragmentDetailsMoviePosterImage"
+                android:layout_width="150dp"
+                android:layout_height="225dp"
+                android:src="@drawable/placeholder_movie_item_image"
+                android:elevation="16dp"
+                android:layout_marginTop="-16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"/>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center">
+
+                <TextView
+                    android:id="@+id/fragmentDetailsMovieTitleText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Jurassic Park"
+                    android:minLines="2"
+                    android:gravity="center"
+                    android:textStyle="bold"
+                    android:textSize="18sp"/>
+
+                <TextView
+                    android:id="@+id/fragmentDetailsMovieReleaseDateText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="February 2013"
+                    android:gravity="center"/>
+
+                <TextView
+                    android:id="@+id/fragmentDetailsMovieRatingText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Rating: 8/10"
+                    android:gravity="center"/>
+
+                <ImageView
+                    android:id="@+id/fragmentDetailsMovieFavoriteImage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_favorite_border"
+                    android:tint="@color/colorPrimary"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <View
+            android:id="@+id/divider2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/fragmentDetailsMovieDetailsContainer"
+            android:layout_alignBottom="@+id/fragmentDetailsMovieDetailsContainer"/>
+
+        <TextView
+            android:id="@+id/fragmentDetailsMovieOverviewText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/divider2"
+            android:padding="16dp"
+            android:gravity="center"
+            android:text="@string/placeholder_movie_plot"
+            />
+
+    </LinearLayout>
+
+</ScrollView>
