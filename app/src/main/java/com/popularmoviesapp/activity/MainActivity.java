@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
         Intent intent = getIntent();
         if(intent != null)
         {
-            mainActivity = intent.getBooleanExtra("ActivitySelector", true);
+            mainActivity = intent.getBooleanExtra(getResources().getString(R.string.mainActivityActivitySelector), true);
         }
 
         if (mainActivity) {
@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
         else {
             getSupportActionBar().setDisplayUseLogoEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
-            getSupportActionBar().setTitle(" Favorite Movies");
+            getSupportActionBar().setTitle(getResources().getString(R.string.mainActivityFavoriteTitleActionBar));
         }
 
         if (findViewById(R.id.movie_detail_container) != null)
@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
                 startActivity(new Intent(this, SettingsActivity.class));
                 return true;
             } else if (id == R.id.action_favorites) {
-                startActivity(new Intent(this, MainActivity.class).putExtra("ActivitySelector", !mainActivity).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                startActivity(new Intent(this, MainActivity.class).putExtra(getResources().getString(R.string.mainActivityActivitySelector), !mainActivity).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
                 return true;
             }
 

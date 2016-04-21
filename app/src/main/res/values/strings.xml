@@ -36,4 +36,7 @@
     </string>
     <string name="title_activity_favorite">FavoriteActivity</string>
 
+    <string name="mainActivityActivitySelector">ActivitySelector</string>
+    <string name="mainActivityFavoriteTitleActionBar"> Favorite Movies</string>
+
 </resources>
