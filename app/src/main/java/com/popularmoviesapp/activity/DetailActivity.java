@@ -24,4 +24,9 @@ public class DetailActivity extends AppCompatActivity {
 
         getSupportFragmentManager().beginTransaction().replace(R.id.movie_detail_container, detailFragment).commit();
     }
+
+    public void setTitle(String title)
+    {
+        getSupportActionBar().setTitle(title);
+    }
 }

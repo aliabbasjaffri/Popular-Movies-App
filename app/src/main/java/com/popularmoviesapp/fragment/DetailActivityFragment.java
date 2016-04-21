@@ -59,7 +59,7 @@ public class DetailActivityFragment extends Fragment  implements LoaderManager.L
     TextView movieOverview;
 
     Uri mUri;
-    boolean mainAcitivtyFragment;
+    boolean mainActivityFragment;
 
     String youtubeKey;
     String movieAPIID = "";
@@ -85,7 +85,7 @@ public class DetailActivityFragment extends Fragment  implements LoaderManager.L
 
         if (arguments != null) {
             mUri = arguments.getParcelable(DetailActivityFragment.DETAIL_URI);
-            mainAcitivtyFragment = arguments.getBoolean(DetailActivityFragment.ACTIVITY_FRAGMENT_SELECTOR);
+            mainActivityFragment = arguments.getBoolean(DetailActivityFragment.ACTIVITY_FRAGMENT_SELECTOR);
         }
 
         backDropImage = (ImageView) view.findViewById(R.id.fragmentDetailsMovieBackDropImage);
@@ -112,8 +112,10 @@ public class DetailActivityFragment extends Fragment  implements LoaderManager.L
         favoriteButtonImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (enableVideo && mainAcitivtyFragment)
+                if (enableVideo && mainActivityFragment)
                     createFavoriteItem.execute(favoriteCursor);
+                if(!mainActivityFragment)
+                    unFavoriteMovie();
             }
         });
         return view;
@@ -131,7 +133,7 @@ public class DetailActivityFragment extends Fragment  implements LoaderManager.L
     {
         if( null != mUri )
         {
-            if(mainAcitivtyFragment) {
+            if(mainActivityFragment) {
                 return new CursorLoader(
                         getActivity(),
                         mUri,
@@ -161,7 +163,7 @@ public class DetailActivityFragment extends Fragment  implements LoaderManager.L
     {
         if (data != null && data.moveToFirst())
         {
-            if(mainAcitivtyFragment) {
+            if(mainActivityFragment) {
                 favoriteCursor = data;
 
                 Picasso.with(getActivity())
@@ -203,7 +205,7 @@ public class DetailActivityFragment extends Fragment  implements LoaderManager.L
                 movieAPIID = data.getString(Constants.FAVORITE_MOVIE_API_ID);
                 enableVideo = true;
             }
-
+            getActivity().setTitle(movieName);
         }
     }
 
@@ -338,6 +340,16 @@ public class DetailActivityFragment extends Fragment  implements LoaderManager.L
              return movieAPIID;
          }
         else return "none";
+    }
+
+    private void unFavoriteMovie()
+    {
+        getActivity().getContentResolver().delete(MovieContract.FavouriteEntry.CONTENT_URI, MovieContract.FavouriteEntry.COLUMN_MOVIE_API_ID + " = ? " , new String [] {movieAPIID});
+        ContentValues movieValues = new ContentValues();
+        movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_LIKED, "0");
+        getActivity().getContentResolver().update(MovieContract.MovieEntry.CONTENT_URI, movieValues, MovieContract.MovieEntry.COLUMN_MOVIE_API_ID + " = ?", new String[]{movieAPIID});
+
+        favoriteButtonImage.setImageResource(R.drawable.ic_favorite_border);
     }
 
     private class GetYoutubeKeyAsyncTask extends AsyncTask<String,Void,String>
