@@ -224,7 +224,7 @@ public class DetailActivityFragment extends Fragment  implements LoaderManager.L
 
     public void onCategoryChanged( )
     {
-        // replace the uri, since the location has changed
+        // replace the uri, since the category has changed
         Uri uri = mUri;
         if (null != uri)
         {
