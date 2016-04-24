@@ -46,7 +46,7 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
         mMovieGridAdapter = new MovieGridAdapter(getActivity() , null , 0 , true);
         gridView.setAdapter(mMovieGridAdapter);
 
-        mainActivityFragment = getActivity().getIntent().getBooleanExtra( "ActivitySelector" , true);
+        mainActivityFragment = getActivity().getIntent().getBooleanExtra( getResources().getString(R.string.mainActivityActivitySelector) , true);
 
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -135,9 +135,6 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     @Override
     public void onSaveInstanceState(Bundle outState)
     {
-        // When tablets rotate, the currently selected list item needs to be saved.
-        // When no item is selected, mPosition will be set to Listview.INVALID_POSITION,
-        // so check for that before storing.
         if (mPosition != ListView.INVALID_POSITION)
             outState.putInt(SELECTED_KEY, mPosition);
 

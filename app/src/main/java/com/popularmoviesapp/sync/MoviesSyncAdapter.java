@@ -14,6 +14,7 @@ import android.content.SharedPreferences;
 import android.content.SyncRequest;
 import android.content.SyncResult;
 import android.database.Cursor;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -51,7 +52,6 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter
     @Override
     public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult)
     {
-        Log.d(LOG_TAG, "Starting sync");
         String category = Utility.getPreferredCategory(getContext());
 
         HttpURLConnection urlConnection = null;
@@ -60,13 +60,9 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter
         String movieJsonStr = null;
 
         try {
-            final String MOVIE_BASE_URL =
-                    Constants.MOVIE_URL;
-            final String API_KEY_PARAM = "api_key";
-
-            Uri builtUri = Uri.parse(MOVIE_BASE_URL).buildUpon()
+            Uri builtUri = Uri.parse(Constants.MOVIE_URL).buildUpon()
                     .appendPath(category)
-                    .appendQueryParameter(API_KEY_PARAM, BuildConfig.THE_MOVIE_DB_API_KEY)
+                    .appendQueryParameter(Constants.API_KEY, BuildConfig.THE_MOVIE_DB_API_KEY)
                     .build();
 
             URL url = new URL(builtUri.toString());
@@ -232,35 +228,22 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter
         boolean displayNotifications = prefs.getBoolean(displayNotificationsKey,
                 Boolean.parseBoolean(context.getString(R.string.pref_enable_notifications_default)));
 
-        /*            int iconId = Utility.getIconResourceForWeatherCondition(weatherId);
-                    Resources resources = context.getResources();
-                    Bitmap largeIcon = BitmapFactory.decodeResource(resources,
-                            Utility.getArtResourceForWeatherCondition(weatherId));
-        */
         if(displayNotifications)
         {
             String title = context.getString(R.string.app_name);
 
             String contentText = context.getString(R.string.notification_content, insertedItems, category);
 
-            // NotificationCompatBuilder is a very convenient way to build backward-compatible
-            // notifications.  Just throw in some data.
             NotificationCompat.Builder mBuilder =
                     new NotificationCompat.Builder(getContext())
                                     .setColor(context.getResources().getColor(R.color.colorPrimaryTransparent))
                                     .setSmallIcon(R.mipmap.ic_launcher)
-                                    //.setLargeIcon(R.mipmap.ic_launcher)
+                                    .setLargeIcon(BitmapFactory.decodeResource(context.getResources() ,  R.mipmap.ic_launcher))
                             .setContentTitle(title)
                             .setContentText(contentText);
 
-            // Make something interesting happen when the user clicks on the notification.
-            // In this case, opening the app is sufficient.
             Intent resultIntent = new Intent(context, MainActivity.class);
 
-            // The stack builder object will contain an artificial back stack for the
-            // started Activity.
-            // This ensures that navigating backward from the Activity leads out of
-            // your application to the Home screen.
             TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
             stackBuilder.addNextIntent(resultIntent);
             PendingIntent resultPendingIntent =
@@ -272,8 +255,7 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter
 
             NotificationManager mNotificationManager =
                     (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
-            // WEATHER_NOTIFICATION_ID allows you to update the notification later on.
-            mNotificationManager.notify(Constants.WEATHER_NOTIFICATION_ID, mBuilder.build());
+            mNotificationManager.notify(Constants.MOVIE_NOTIFICATION_ID, mBuilder.build());
         }
     }
 
@@ -284,7 +266,6 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter
         Account account = getSyncAccount(context);
         String authority = context.getString(R.string.authourity);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            // we can enable inexact timers in our periodic sync
             SyncRequest request = new SyncRequest.Builder().
                     syncPeriodic(syncInterval, flexTime).
                     setSyncAdapter(account, authority).

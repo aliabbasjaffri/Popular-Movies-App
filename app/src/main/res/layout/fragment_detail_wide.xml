@@ -16,7 +16,7 @@
 
             <ImageView
                 android:id="@+id/fragmentDetailsMovieBackDropImage"
-                android:src="@drawable/placeholder_movie_details_image"
+                android:src="@drawable/ic_movie_reel"
                 android:layout_width="match_parent"
                 android:scaleType="fitCenter"
                 android:adjustViewBounds="true"
@@ -49,7 +49,7 @@
                 android:id="@+id/fragmentDetailsMoviePosterImage"
                 android:layout_width="150dp"
                 android:layout_height="225dp"
-                android:src="@drawable/placeholder_movie_item_image"
+                android:src="@drawable/ic_movie_placeholder"
                 android:elevation="16dp"
                 android:layout_marginTop="-16dp"
                 android:layout_marginStart="16dp"
@@ -112,7 +112,7 @@
             android:layout_below="@+id/divider2"
             android:padding="16dp"
             android:gravity="center"
-            android:text="@string/placeholder_movie_plot"
+            android:text="@string/app_name"
             />
 
     </LinearLayout>

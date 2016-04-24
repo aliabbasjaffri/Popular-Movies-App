@@ -104,7 +104,7 @@ public class DetailActivityFragment extends Fragment  implements LoaderManager.L
             @Override
             public void onClick(View v) {
                 if (enableVideo)
-                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(Constants.YOU_TUBE_VIDEO_URL + youtubeKey)).putExtra("force_fullscreen", true));
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(Constants.YOU_TUBE_VIDEO_URL + youtubeKey)).putExtra(getResources().getString(R.string.fullScreenYoutubeIntent), true));
             }
         });
 
@@ -168,8 +168,8 @@ public class DetailActivityFragment extends Fragment  implements LoaderManager.L
 
                 Picasso.with(getActivity())
                         .load(Constants.IMAGE_MOVIE_URL + Constants.IMAGE_SIZE_W500 + data.getString(Constants.MOVIE_BACKDROP_PATH))
-                        .placeholder(R.drawable.ic_movie_placeholder)
-                        .error(R.drawable.ic_movie_placeholder)
+                        .placeholder(R.drawable.ic_movie_reel)
+                        .error(R.drawable.ic_movie_reel)
                         .into(backDropImage);
 
                 Picasso.with(getActivity())
@@ -222,6 +222,28 @@ public class DetailActivityFragment extends Fragment  implements LoaderManager.L
         createFavoriteItem.cancel(false);
     }
 
+    public void onCategoryChanged( )
+    {
+        // replace the uri, since the location has changed
+        Uri uri = mUri;
+        if (null != uri)
+        {
+            long id;
+            Uri updatedUri;
+            if(mainActivityFragment) {
+                id = MovieContract.MovieEntry.getMovieIDFromUri(uri);
+                updatedUri = MovieContract.MovieEntry.buildMovieUri(id);
+            }
+            else
+            {
+                id = MovieContract.FavouriteEntry.getFavouriteIDFromUri(uri);
+                updatedUri = MovieContract.FavouriteEntry.buildFavouriteUri(id);
+            }
+            mUri = updatedUri;
+            getLoaderManager().restartLoader(DETAIL_LOADER, null, this);
+        }
+    }
+
     private String getMovieYoutubeID(String id)
     {
         HttpURLConnection urlConnection = null;
@@ -229,14 +251,10 @@ public class DetailActivityFragment extends Fragment  implements LoaderManager.L
         StringBuilder buffer = new StringBuilder();
 
         try {
-            final String MOVIE_BASE_URL =
-                    Constants.MOVIE_URL;
-            final String API_KEY_PARAM = "api_key";
-
-            Uri builtUri = Uri.parse(MOVIE_BASE_URL).buildUpon()
+            Uri builtUri = Uri.parse(Constants.MOVIE_URL).buildUpon()
                     .appendPath(id)
                     .appendPath(Constants.VIDEO)
-                    .appendQueryParameter(API_KEY_PARAM, BuildConfig.THE_MOVIE_DB_API_KEY)
+                    .appendQueryParameter(Constants.API_KEY, BuildConfig.THE_MOVIE_DB_API_KEY)
                     .build();
 
             URL url = new URL(builtUri.toString());
@@ -289,7 +307,6 @@ public class DetailActivityFragment extends Fragment  implements LoaderManager.L
         String youtubeKey = "";
 
         try {
-            Log.v("Video Wali JSON" , JSON);
             JSONObject movieVideoJson = new JSONObject(JSON);
             JSONArray movieVideoArray = movieVideoJson.getJSONArray(OMA_RESULTS);
 

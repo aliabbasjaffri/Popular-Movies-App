@@ -130,7 +130,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
             }
             if ( null != detailFragment )
             {
-            //    detailFragment.onLocationChanged(location);
+                detailFragment.onCategoryChanged();
             }
             mCategory = category;
         }

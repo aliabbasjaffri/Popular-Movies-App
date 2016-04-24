@@ -29,6 +29,7 @@ public class Constants {
     public static final String POPULAR_MOVIES = "popular";
     public static final String TOP_RATED_MOVIES = "top_rated";
     public static final String UPCOMING_MOVIES = "upcoming";
+    public static final String API_KEY = "api_key";
 
     public static final String[] MOVIE_COLUMNS = {
             MovieContract.MovieEntry.TABLE_NAME + "." + MovieContract.MovieEntry._ID,
@@ -92,5 +93,5 @@ public class Constants {
     // (60 seconds (1 minute) * 60 * 12 hours) seconds
     public static final int SYNC_INTERVAL = 60 * 60 * 12;
     public static final int SYNC_FLEXTIME = SYNC_INTERVAL/2;
-    public static final int WEATHER_NOTIFICATION_ID = 3004;
+    public static final int MOVIE_NOTIFICATION_ID = 3004;
 }

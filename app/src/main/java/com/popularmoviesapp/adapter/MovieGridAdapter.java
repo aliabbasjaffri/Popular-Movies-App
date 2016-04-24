@@ -12,6 +12,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.view.LayoutInflater;
 import android.widget.CursorAdapter;
+import android.widget.Toast;
 
 import com.popularmoviesapp.helper.GridViewHolder;
 import com.popularmoviesapp.utils.Constants;
@@ -45,7 +46,7 @@ public class MovieGridAdapter extends CursorAdapter
     }
 
     @Override
-    public void bindView(View view, Context context, Cursor cursor)
+    public void bindView(View view, final Context context, Cursor cursor)
     {
         final GridViewHolder viewHolder = (GridViewHolder) view.getTag();
 
@@ -71,6 +72,7 @@ public class MovieGridAdapter extends CursorAdapter
 
                                 @Override
                                 public void onError() {
+                                    Toast.makeText(context , context.getResources().getString(R.string.errorFetchingFromServer) , Toast.LENGTH_SHORT).show();
                                 }
                             }
                     );
