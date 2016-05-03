@@ -38,5 +38,8 @@
 
     <string name="errorFetchingFromServer">Error fetching image from server</string>
     <string name="fullScreenYoutubeIntent">force_fullscreen</string>
+    <string name="action_share">Share Video</string>
+
+    <string name="shareYoutubeClip">popularMoviesApp made and maintained by BAMFDaemon. Enjoy %1$s trailer at %2$s</string>
 
 </resources>

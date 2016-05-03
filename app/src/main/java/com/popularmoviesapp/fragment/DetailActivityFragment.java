@@ -11,25 +11,27 @@ import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v7.widget.ShareActionProvider;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.popularmoviesapp.BuildConfig;
 import com.popularmoviesapp.R;
 import com.popularmoviesapp.provider.MovieContract;
 import com.popularmoviesapp.utils.Constants;
 import com.popularmoviesapp.utils.Utility;
 import com.squareup.picasso.Picasso;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -42,6 +44,8 @@ import java.net.URL;
  */
 public class DetailActivityFragment extends Fragment  implements LoaderManager.LoaderCallbacks<Cursor>
 {
+    private ShareActionProvider mShareActionProvider;
+
     private static final int DETAIL_LOADER = 0;
 
     public static final String DETAIL_URI = "URI";
@@ -72,6 +76,13 @@ public class DetailActivityFragment extends Fragment  implements LoaderManager.L
     CreateFavoriteItem createFavoriteItem;
 
     public DetailActivityFragment() {
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -119,6 +130,24 @@ public class DetailActivityFragment extends Fragment  implements LoaderManager.L
             }
         });
         return view;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
+    {
+        inflater.inflate(R.menu.menu_detail, menu);
+
+        MenuItem menuItem = menu.findItem(R.id.action_share);
+        mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(menuItem);
+
+        if (enableVideo)
+            mShareActionProvider.setShareIntent(createShareForecastIntent());
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -220,6 +249,17 @@ public class DetailActivityFragment extends Fragment  implements LoaderManager.L
         super.onStop();
         getYoutubeKeyAsyncTask.cancel(false);
         createFavoriteItem.cancel(false);
+    }
+
+    private Intent createShareForecastIntent()
+    {
+        String shareString = getContext().getString(R.string.shareYoutubeClip , movieName , Uri.parse(Constants.YOU_TUBE_VIDEO_URL + youtubeKey));
+
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+        shareIntent.setType("text/plain");
+        shareIntent.putExtra(Intent.EXTRA_TEXT, shareString);
+        return shareIntent;
     }
 
     public void onCategoryChanged( )
