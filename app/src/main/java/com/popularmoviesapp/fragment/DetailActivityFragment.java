@@ -21,6 +21,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.popularmoviesapp.BuildConfig;
@@ -53,6 +54,7 @@ public class DetailActivityFragment extends Fragment  implements LoaderManager.L
 
     private static final String LOG_TAG = DetailActivityFragment.class.getSimpleName();
 
+    ProgressBar progressBar;
     ImageView backDropImage;
     ImageView posterImage;
     ImageView trailerPlayButtonImage;
@@ -99,6 +101,7 @@ public class DetailActivityFragment extends Fragment  implements LoaderManager.L
             mainActivityFragment = arguments.getBoolean(DetailActivityFragment.ACTIVITY_FRAGMENT_SELECTOR);
         }
 
+        progressBar = (ProgressBar) view.findViewById(R.id.progressBar);
         backDropImage = (ImageView) view.findViewById(R.id.fragmentDetailsMovieBackDropImage);
         posterImage = (ImageView) view.findViewById(R.id.fragmentDetailsMoviePosterImage);
         trailerPlayButtonImage = (ImageView) view.findViewById(R.id.fragmentDetailsMovieTrailerPlayButton);
@@ -220,6 +223,8 @@ public class DetailActivityFragment extends Fragment  implements LoaderManager.L
                 else {
                     youtubeKey = data.getString(Constants.MOVIE_YOUTUBE_KEY);
                     enableVideo = true;
+                    progressBar.setVisibility(View.GONE);
+                    trailerPlayButtonImage.setVisibility(View.VISIBLE);
                 }
             }
             else
@@ -233,6 +238,8 @@ public class DetailActivityFragment extends Fragment  implements LoaderManager.L
                 movieOverview.setText(data.getString(Constants.FAVORITE_MOVIE_OVERVIEW));
                 movieAPIID = data.getString(Constants.FAVORITE_MOVIE_API_ID);
                 enableVideo = true;
+                progressBar.setVisibility(View.GONE);
+                trailerPlayButtonImage.setVisibility(View.VISIBLE);
             }
             getActivity().setTitle(movieName);
         }
@@ -414,6 +421,13 @@ public class DetailActivityFragment extends Fragment  implements LoaderManager.L
         private String movieID;
 
         @Override
+        protected void onPreExecute()
+        {
+            progressBar.invalidate();
+            trailerPlayButtonImage.setVisibility(View.INVISIBLE);
+        }
+
+        @Override
         protected String doInBackground(String... params)
         {
             movieID = params[0];
@@ -431,9 +445,13 @@ public class DetailActivityFragment extends Fragment  implements LoaderManager.L
                 movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_YOUTUBE_KEY, youtubeKey);
                 getActivity().getContentResolver().update(MovieContract.MovieEntry.CONTENT_URI, movieValues, MovieContract.MovieEntry.COLUMN_MOVIE_API_ID + " = ?", new String[]{movieID});
                 enableVideo = true;
+                progressBar.setVisibility(View.GONE);
+                trailerPlayButtonImage.setVisibility(View.VISIBLE);
             }
-            else
-                Toast.makeText(getActivity(), "No Video URL For " + ( !movieName.equals("") ? movieName : "movie"), Toast.LENGTH_LONG).show();
+            else {
+                Toast.makeText(getActivity(), "No Video URL For " + (!movieName.equals("") ? movieName : "movie"), Toast.LENGTH_LONG).show();
+                progressBar.setVisibility(View.GONE);
+            }
         }
     }
 
